@@ -1,5 +1,5 @@
 // =====================================================
-// SMART ATTENDANCE - SCAN NPM BARCODE
+// ABSENSI MAHASISWA - SCAN NPM
 // =====================================================
 
 let semuaMahasiswa = [];
@@ -40,12 +40,10 @@ async function loadDashboard() {
 // =====================================================
 async function loadMahasiswa() {
     const response = await fetch(API_URL + "?action=getMahasiswa&nocache=" + Date.now());
-
     if (!response.ok) throw new Error("Gagal mengambil data mahasiswa");
 
     const result = await response.json();
     console.log("HASIL API:", result);
-
     if (!result.success) throw new Error(result.message);
 
     semuaMahasiswa = Array.isArray(result.data) ? result.data : [];
@@ -151,7 +149,7 @@ async function simpanAbsensi() {
         tampilkanPesan("Tidak dapat menyimpan absensi. Periksa koneksi dan URL Apps Script.", "error");
     } finally {
         button.disabled = false;
-        button.textContent = "✓ Absen Sekarang";
+        button.textContent = "✓ Konfirmasi Absen";
     }
 }
 
@@ -276,7 +274,7 @@ function tampilkanPesan(text, type) {
 }
 
 // =====================================================
-// SCAN BARCODE / QR NPM PAKAI KAMERA
+// SCAN NPM PAKAI KAMERA
 // =====================================================
 function openScanner() {
     const modal = document.getElementById("scannerModal");
@@ -286,7 +284,6 @@ function openScanner() {
     errorBox.textContent = "";
     modal.classList.remove("hidden");
 
-    // Support semua format barcode 1D + QR Code
     const formatsToSupport = [
         Html5QrcodeSupportedFormats.QR_CODE,
         Html5QrcodeSupportedFormats.CODE_128,
@@ -322,14 +319,10 @@ function openScanner() {
 }
 
 async function onScanSukses(decodedText) {
-    // Stop kamera setelah berhasil scan
     closeScanner();
 
-    // Ambil NPM dari hasil scan (bersihkan karakter non-digit)
     let npm = decodedText.trim();
 
-    // Jika hasil scan berupa teks panjang, ambil hanya angka NPM
-    // (misal hasil scan "NPM: 2024001" → ambil "2024001")
     const matchNpm = npm.match(/\d{5,}/);
     if (matchNpm) {
         npm = matchNpm[0];
@@ -338,7 +331,6 @@ async function onScanSukses(decodedText) {
     const npmInput = document.getElementById("npm");
     npmInput.value = npm;
 
-    // Cari langsung ke data mahasiswa
     const mahasiswa = semuaMahasiswa.find(function (mhs) {
         return String(mhs.npm).trim() === npm;
     });
@@ -357,14 +349,12 @@ async function onScanSukses(decodedText) {
 
     mahasiswaDipilih = mahasiswa;
 
-    // Tampilkan data mahasiswa
     document.getElementById("studentName").textContent = mahasiswa.nama || "-";
     document.getElementById("studentNpm").textContent = mahasiswa.npm || "-";
     document.getElementById("studentClass").textContent = mahasiswa.kelas || "-";
     document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
     document.getElementById("studentInfo").classList.remove("hidden");
 
-    // Langsung simpan absensi otomatis
     await simpanAbsensi();
 }
 
