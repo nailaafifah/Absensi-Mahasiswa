@@ -13,7 +13,6 @@
 <body>
 <div class="container">
 
-    <!-- HEADER BARU -->
     <header class="app-header">
         <div class="header-left">
             <div class="logo-circle">📋</div>
@@ -27,7 +26,6 @@
         </button>
     </header>
 
-    <!-- STATISTIK BARU (4 kotak sejajar, lebih minimalis) -->
     <section class="stats-row">
         <div class="stat-item stat-total">
             <div class="stat-number" id="totalMahasiswa">0</div>
@@ -47,10 +45,8 @@
         </div>
     </section>
 
-    <!-- AREA UTAMA -->
     <section class="main-area">
 
-        <!-- SCAN CARD -->
         <div class="card scan-card">
             <div class="card-tag">SCAN NPM</div>
             <h2>Scan NPM Mahasiswa</h2>
@@ -68,12 +64,15 @@
                 📷 Buka Kamera Scanner
             </button>
 
+            <a href="barcode-saya.html" target="_blank" class="btn-barcode-link">
+                🎫 Buka Halaman Barcode Saya
+            </a>
+
             <div class="scan-note">
                 Hasil scan langsung tersimpan ke Spreadsheet
             </div>
         </div>
 
-        <!-- FORM CARD -->
         <div class="card form-card">
             <div class="card-tag">INPUT MANUAL</div>
             <h2>Input NPM</h2>
@@ -90,7 +89,6 @@
                 🔍 Cek Mahasiswa
             </button>
 
-            <!-- Info Mahasiswa -->
             <div id="studentInfo" class="student-card hidden">
                 <div class="student-avatar">👤</div>
                 <div class="student-detail">
@@ -109,7 +107,6 @@
         </div>
     </section>
 
-    <!-- DAFTAR KEHADIRAN -->
     <section class="card list-card">
         <div class="card-header">
             <div>
@@ -136,7 +133,6 @@
         </div>
     </section>
 
-    <!-- BELUM HADIR -->
     <section class="card absent-card">
         <div class="card-header">
             <div>
@@ -153,7 +149,6 @@
     </footer>
 </div>
 
-<!-- MODAL SCANNER -->
 <div id="scannerModal" class="scanner-modal hidden">
     <div class="scanner-box">
         <div class="scanner-header">
@@ -169,7 +164,7 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzwTa_k9Qb9gbSKe7SmkbXpRDbWtS0MEGAwE3GKqvXl7Mga2ANgtxBSuXQ1Wmx8HiAcRQ/exec";
 </script>
 <script src="script.js"></script>
 </body>
