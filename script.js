@@ -300,12 +300,16 @@ function openScanner() {
     html5QrScanner = new Html5Qrcode("reader", { formatsToSupport: formatsToSupport });
 
     html5QrScanner
-        .start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 280, height: 180 } },
-            onScanSukses,
-            function () {}
-        )
+    .start(
+        { facingMode: "environment" },
+        {
+            fps: 20,
+            qrbox: { width: 280, height: 280 },
+            aspectRatio: 1.0
+        },
+        onScanSukses,
+        function () {}
+    )
         .then(function () {
             scannerSedangJalan = true;
         })
