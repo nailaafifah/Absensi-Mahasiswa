@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Saya - Absensi</title>
 
-    <!-- Library QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
     <style>
@@ -28,7 +27,7 @@
 
         .card {
             width: 100%;
-            max-width: 420px;
+            max-width: 460px;
             background: white;
             border-radius: 20px;
             padding: 32px 24px;
@@ -36,14 +35,11 @@
             text-align: center;
         }
 
-        .header-icon {
-            font-size: 38px;
-            margin-bottom: 8px;
-        }
+        /* ---------- FORM ---------- */
+        .header-icon { font-size: 38px; margin-bottom: 8px; }
 
         .header h1 {
             font-size: 20px;
-            color: #0f172a;
             margin-bottom: 4px;
             font-weight: 800;
         }
@@ -55,10 +51,7 @@
             margin-bottom: 24px;
         }
 
-        .form-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
+        .form-group { margin-bottom: 16px; text-align: left; }
 
         .form-group label {
             display: block;
@@ -102,71 +95,72 @@
             transition: all 0.2s;
         }
 
-        .btn-generate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(13, 148, 136, 0.4);
-        }
+        .btn-generate:hover { transform: translateY(-2px); }
+        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        .btn-generate:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .qr-result {
-            display: none;
-            margin-top: 8px;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .qr-result.show {
-            display: block;
-        }
+        /* ---------- HASIL QR (gaya PDF) ---------- */
+        .qr-result { display: none; animation: fadeIn 0.4s ease; }
+        .qr-result.show { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        .student-name {
-            font-size: 18px;
+        .qr-eyebrow {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #475569;
+            text-transform: uppercase;
+        }
+
+        .qr-title {
+            font-size: 26px;
             font-weight: 800;
             color: #0f172a;
-            margin-bottom: 4px;
+            margin: 6px 0 20px;
         }
 
-        .student-detail {
-            font-size: 12px;
-            color: #0f766e;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        /* ============================================
-           KOTAK QR — SEPERTI PDF (kotak sempurna)
-           ============================================ */
+        /* Kotak QR: selalu persegi, tanpa border, tanpa distorsi */
         .qr-box {
-            background: #ffffff;
-            margin: 0 auto 16px auto;
             width: 100%;
             max-width: 340px;
             aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
+            margin: 0 auto;
+            background: #ffffff;
         }
 
         #qrcodeCanvas {
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            image-rendering: pixelated;      /* piksel tetap tajam */
+            image-rendering: crisp-edges;
         }
 
-        /* ============================================
-           LABEL SEPERTI PDF
-           ============================================ */
+        .npm-text {
+            font-size: 15px;
+            color: #475569;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-top: 14px;
+            font-family: "Courier New", monospace;
+        }
+
+        .student-name {
+            font-size: 18px;
+            font-weight: 800;
+            margin-top: 18px;
+        }
+
+        .student-detail {
+            font-size: 12px;
+            color: #0f766e;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
         .qr-label {
             margin-top: 20px;
             padding-top: 16px;
@@ -177,26 +171,11 @@
             display: block;
             font-size: 14px;
             font-weight: 800;
-            color: #0f172a;
             letter-spacing: 1px;
             margin-bottom: 4px;
         }
 
-        .qr-label span {
-            display: block;
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .npm-text {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 600;
-            letter-spacing: 2px;
-            margin-top: 12px;
-            font-family: "Courier New", monospace;
-        }
+        .qr-label span { font-size: 12px; color: #64748b; }
 
         .tips-box {
             background: #fef3c7;
@@ -205,17 +184,13 @@
             padding: 12px;
             font-size: 11px;
             color: #78350f;
-            line-height: 1.6;
+            line-height: 1.7;
             font-weight: 600;
             margin-top: 18px;
             text-align: left;
         }
 
-        .tips-box b {
-            color: #92400e;
-            display: block;
-            margin-bottom: 4px;
-        }
+        .tips-box b { color: #92400e; display: block; margin-bottom: 4px; }
 
         .btn-reset {
             width: 100%;
@@ -231,9 +206,7 @@
             transition: all 0.2s;
         }
 
-        .btn-reset:hover {
-            background: #e2e8f0;
-        }
+        .btn-reset:hover { background: #e2e8f0; }
 
         .error-msg {
             display: none;
@@ -244,13 +217,10 @@
             color: #991b1b;
             font-size: 13px;
             font-weight: 600;
-            text-align: center;
             border: 1px solid #fca5a5;
         }
 
-        .error-msg.show {
-            display: block;
-        }
+        .error-msg.show { display: block; }
     </style>
 </head>
 
@@ -266,27 +236,17 @@
 
             <div class="form-group">
                 <label for="npm">Masukkan NPM Kamu</label>
-                <input
-                    type="text"
-                    id="npm"
-                    placeholder="Contoh: 2410511074"
-                    autocomplete="off"
-                    inputmode="numeric"
-                >
+                <input type="text" id="npm" placeholder="Contoh: 2410511074"
+                       autocomplete="off" inputmode="numeric">
             </div>
 
-            <button class="btn-generate" onclick="generateQR()">
-                🎫 Tampilkan QR Code
-            </button>
-
+            <button class="btn-generate" onclick="generateQR()">🎫 Tampilkan QR Code</button>
             <div id="errorMsg" class="error-msg"></div>
         </div>
 
         <div id="qrArea" class="qr-result">
-            <div class="student-name" id="studentName">-</div>
-            <div class="student-detail">
-                <span id="studentClass">-</span> • <span id="studentMajor">-</span>
-            </div>
+            <div class="qr-eyebrow">Absensi</div>
+            <div class="qr-title">Scan QR Code</div>
 
             <div class="qr-box">
                 <canvas id="qrcodeCanvas"></canvas>
@@ -294,9 +254,14 @@
 
             <div class="npm-text" id="qrNpm">-</div>
 
+            <div class="student-name" id="studentName">-</div>
+            <div class="student-detail">
+                <span id="studentClass">-</span> • <span id="studentMajor">-</span>
+            </div>
+
             <div class="qr-label">
-                <b>QR ABSENSI KELAS</b>
-                <span>Satu QR untuk semua mahasiswa</span>
+                <b>QR ABSENSI MAHASISWA</b>
+                <span>Tunjukkan QR ini ke dosen untuk discan</span>
             </div>
 
             <div class="tips-box">
@@ -307,46 +272,30 @@
                 4. Bersihkan layar HP dari sidik jari
             </div>
 
-            <button class="btn-reset" onclick="resetForm()">
-                ← Ganti NPM
-            </button>
+            <button class="btn-reset" onclick="resetForm()">← Ganti NPM</button>
         </div>
     </div>
 
     <script>
-        // GANTI dengan URL Web App milikmu
         const API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
 
         async function generateQR() {
-            const npmInput = document.getElementById("npm");
-            const npm = npmInput.value.trim();
+            const npm = document.getElementById("npm").value.trim();
             const errorBox = document.getElementById("errorMsg");
-
             errorBox.classList.remove("show");
 
-            if (!npm) {
-                tampilkanError("Silakan masukkan NPM terlebih dahulu.");
-                return;
-            }
-
-            if (!/^\d+$/.test(npm)) {
-                tampilkanError("NPM hanya boleh berisi angka.");
-                return;
-            }
+            if (!npm) return tampilkanError("Silakan masukkan NPM terlebih dahulu.");
+            if (!/^\d+$/.test(npm)) return tampilkanError("NPM hanya boleh berisi angka.");
 
             const button = document.querySelector(".btn-generate");
             button.disabled = true;
             button.textContent = "Memeriksa...";
 
             try {
-                const response = await fetch(
-                    API_URL + "?action=getMahasiswa&nocache=" + Date.now()
-                );
-
+                const response = await fetch(API_URL + "?action=getMahasiswa&nocache=" + Date.now());
                 if (!response.ok) throw new Error("Gagal menghubungi server.");
 
                 const result = await response.json();
-
                 if (!result.success) throw new Error(result.message);
 
                 const mahasiswa = result.data.find(function (mhs) {
@@ -355,8 +304,6 @@
 
                 if (!mahasiswa) {
                     tampilkanError("NPM " + npm + " tidak terdaftar.");
-                    button.disabled = false;
-                    button.textContent = "🎫 Tampilkan QR Code";
                     return;
                 }
 
@@ -365,20 +312,11 @@
                 document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
                 document.getElementById("qrNpm").textContent = mahasiswa.npm;
 
-                const canvas = document.getElementById("qrcodeCanvas");
-
-                await QRCode.toCanvas(canvas, String(mahasiswa.npm), {
-                    width: 340,
-                    margin: 3,
-                    color: {
-                        dark: "#000000",
-                        light: "#ffffff"
-                    },
-                    errorCorrectionLevel: "M"
-                });
-
+                // Tampilkan area dulu, baru gambar QR
                 document.getElementById("formArea").style.display = "none";
                 document.getElementById("qrArea").classList.add("show");
+
+                await gambarQR(String(mahasiswa.npm));
 
             } catch (error) {
                 console.error(error);
@@ -387,6 +325,23 @@
                 button.disabled = false;
                 button.textContent = "🎫 Tampilkan QR Code";
             }
+        }
+
+        // Gambar QR persegi dengan modul berukuran bulat (tajam seperti PDF)
+        async function gambarQR(teks) {
+            const canvas = document.getElementById("qrcodeCanvas");
+
+            await QRCode.toCanvas(canvas, teks, {
+                scale: 12,                 // 1 modul = 12 piksel
+                margin: 4,                 // quiet zone standar QR
+                errorCorrectionLevel: "M",
+                color: { dark: "#000000", light: "#ffffff" }
+            });
+
+            // Library menulis style inline (ukuran piksel tetap) -> timpa
+            // supaya QR mengikuti lebar kotak tapi TETAP persegi.
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
         }
 
         function tampilkanError(pesan) {
@@ -405,9 +360,7 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("npm").addEventListener("keydown", function (e) {
-                if (e.key === "Enter") {
-                    generateQR();
-                }
+                if (e.key === "Enter") generateQR();
             });
         });
     </script>
