@@ -1,406 +1,231 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Saya - Absensi</title>
 
-    <!-- LIBRARY BARU: qrcode (bukan qrcodejs) -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Inter", "Segoe UI", Arial, sans-serif;
-        }
+    <title>QR Mahasiswa - Smart Attendance</title>
 
-        body {
-            min-height: 100vh;
-            background: #f0fdfa;
-            color: #0f172a;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    <link
+        rel="stylesheet"
+        href="qr.css"
+    >
 
-        .card {
-            width: 100%;
-            max-width: 420px;
-            background: white;
-            border-radius: 20px;
-            padding: 32px 24px;
-            box-shadow: 0 8px 30px rgba(13, 148, 136, 0.12);
-            text-align: center;
-        }
-
-        .header-icon {
-            font-size: 38px;
-            margin-bottom: 8px;
-        }
-
-        .header h1 {
-            font-size: 20px;
-            color: #0f172a;
-            margin-bottom: 4px;
-            font-weight: 800;
-        }
-
-        .header p {
-            font-size: 12px;
-            color: #64748b;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.2s;
-            text-align: center;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .form-group input:focus {
-            border-color: #14b8a6;
-            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
-        }
-
-        .btn-generate {
-            width: 100%;
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3);
-            transition: all 0.2s;
-        }
-
-        .btn-generate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(13, 148, 136, 0.4);
-        }
-
-        .btn-generate:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .qr-result {
-            display: none;
-            margin-top: 8px;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .qr-result.show {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .student-name {
-            font-size: 18px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 4px;
-        }
-
-        .student-detail {
-            font-size: 12px;
-            color: #0f766e;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .qr-box {
-            background: #ffffff;
-            margin: 0 auto 12px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-        }
-
-        #qrcodeCanvas {
-            display: block !important;
-            width: 320px !important;
-            height: 320px !important;
-            max-width: 100% !important;
-            background: #ffffff;
-        }
-
-        .npm-text {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 600;
-            letter-spacing: 2px;
-            margin-top: 8px;
-            font-family: "Courier New", monospace;
-        }
-
-        .qr-label {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 2px dashed #e2e8f0;
-        }
-
-        .qr-label b {
-            display: block;
-            font-size: 14px;
-            font-weight: 800;
-            color: #0f172a;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
-
-        .qr-label span {
-            display: block;
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .tips-box {
-            background: #fef3c7;
-            border: 1px solid #fcd34d;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 11px;
-            color: #78350f;
-            line-height: 1.6;
-            font-weight: 600;
-            margin-top: 18px;
-            text-align: left;
-        }
-
-        .tips-box b {
-            color: #92400e;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .btn-reset {
-            width: 100%;
-            background: #f1f5f9;
-            color: #475569;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 16px;
-            transition: all 0.2s;
-        }
-
-        .btn-reset:hover {
-            background: #e2e8f0;
-        }
-
-        .error-msg {
-            display: none;
-            margin-top: 14px;
-            padding: 12px;
-            border-radius: 12px;
-            background: #fee2e2;
-            color: #991b1b;
-            font-size: 13px;
-            font-weight: 600;
-            text-align: center;
-            border: 1px solid #fca5a5;
-        }
-
-        .error-msg.show {
-            display: block;
-        }
-    </style>
 </head>
 
+
 <body>
-    <div class="card">
 
-        <div id="formArea">
-            <div class="header">
-                <div class="header-icon">🎫</div>
-                <h1>QR Code Saya</h1>
-                <p>Tunjukkan QR Code ini ke dosen<br>untuk absensi kehadiran</p>
+<div class="container">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div>
+
+            <div class="logo">
+                ▦
             </div>
 
-            <div class="form-group">
-                <label for="npm">Masukkan NPM Kamu</label>
-                <input
-                    type="text"
-                    id="npm"
-                    placeholder="Contoh: 2410511074"
-                    autocomplete="off"
-                    inputmode="numeric"
-                >
+            <div>
+
+                <h1>
+                    QR Mahasiswa
+                </h1>
+
+                <p>
+                    QR Code Absensi Mahasiswa
+                </p>
+
             </div>
 
-            <button class="btn-generate" onclick="generateQR()">
-                🎫 Tampilkan QR Code
-            </button>
-
-            <div id="errorMsg" class="error-msg"></div>
         </div>
 
-        <div id="qrArea" class="qr-result">
-            <div class="student-name" id="studentName">-</div>
-            <div class="student-detail">
-                <span id="studentClass">-</span> • <span id="studentMajor">-</span>
-            </div>
 
-            <div class="qr-box">
-                <canvas id="qrcodeCanvas"></canvas>
-            </div>
+        <a
+            href="index.html"
+            class="back"
+        >
+            ← Kembali
+        </a>
 
-            <div class="npm-text" id="qrNpm">-</div>
+    </header>
 
-            <div class="qr-label">
-                <b>QR ABSENSI MAHASISWA</b>
-                <span>Tunjukkan ke dosen untuk absensi</span>
-            </div>
 
-            <div class="tips-box">
-                <b>💡 Tips supaya gampang discan:</b>
-                1. Naikkan kecerahan layar HP ke 100%<br>
-                2. Matikan mode malam / dark mode<br>
-                3. Jarak kamera 15-25 cm dari QR<br>
-                4. Bersihkan layar HP dari sidik jari
-            </div>
+    <!-- INFORMASI -->
 
-            <button class="btn-reset" onclick="resetForm()">
-                ← Ganti NPM
-            </button>
+    <section class="info">
+
+        <div class="info-icon">
+            ✓
         </div>
+
+        <div>
+
+            <h2>
+                QR Code Mahasiswa
+            </h2>
+
+            <p>
+                QR Code dibuat otomatis berdasarkan
+                NPM mahasiswa yang terdapat pada
+                Google Spreadsheet.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- TOOLBAR -->
+
+    <div class="toolbar">
+
+        <input
+            type="text"
+            id="search"
+            placeholder="Cari nama, NPM, kelas..."
+        >
+
+        <button
+            onclick="loadMahasiswa()"
+        >
+            🔄 Refresh
+        </button>
+
+        <button
+            onclick="window.print()"
+            class="print"
+        >
+            🖨 Cetak Semua
+        </button>
+
     </div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzwTa_k9Qb9gbSKe7SmkbXpRDbWtS0MEGAwE3GKqvXl7Mga2ANgtxBSuXQ1Wmx8HiAcRQ/exec";
 
-        async function generateQR() {
-            const npmInput = document.getElementById("npm");
-            const npm = npmInput.value.trim();
-            const errorBox = document.getElementById("errorMsg");
+    <!-- STATUS -->
 
-            errorBox.classList.remove("show");
+    <div class="status">
 
-            if (!npm) {
-                tampilkanError("Silakan masukkan NPM terlebih dahulu.");
-                return;
-            }
+        <span id="count">
+            Memuat mahasiswa...
+        </span>
 
-            if (!/^\d+$/.test(npm)) {
-                tampilkanError("NPM hanya boleh berisi angka.");
-                return;
-            }
+        <span
+            id="status"
+            class="waiting"
+        >
+            Menghubungkan...
+        </span>
 
-            const button = document.querySelector(".btn-generate");
-            button.disabled = true;
-            button.textContent = "Memeriksa...";
+    </div>
 
-            try {
-                const response = await fetch(
-                    API_URL + "?action=getMahasiswa&nocache=" + Date.now()
-                );
 
-                if (!response.ok) throw new Error("Gagal menghubungi server.");
+    <!-- LOADING -->
 
-                const result = await response.json();
+    <div
+        id="loading"
+        class="loading"
+    >
 
-                if (!result.success) throw new Error(result.message);
+        <div class="spinner"></div>
 
-                const mahasiswa = result.data.find(function (mhs) {
-                    return String(mhs.npm).trim() === npm;
-                });
+        <h2>
+            Memuat data mahasiswa...
+        </h2>
 
-                if (!mahasiswa) {
-                    tampilkanError("NPM " + npm + " tidak terdaftar.");
-                    button.disabled = false;
-                    button.textContent = "🎫 Tampilkan QR Code";
-                    return;
-                }
+        <p>
+            Mengambil data dari Google Spreadsheet
+        </p>
 
-                document.getElementById("studentName").textContent = mahasiswa.nama || "-";
-                document.getElementById("studentClass").textContent = mahasiswa.kelas || "-";
-                document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
-                document.getElementById("qrNpm").textContent = mahasiswa.npm;
+    </div>
 
-                const canvas = document.getElementById("qrcodeCanvas");
 
-                await QRCode.toCanvas(canvas, String(mahasiswa.npm), {
-                    width: 320,
-                    margin: 2,
-                    color: {
-                        dark: "#000000",
-                        light: "#ffffff"
-                    },
-                    errorCorrectionLevel: "M"
-                });
+    <!-- QR -->
 
-                document.getElementById("formArea").style.display = "none";
-                document.getElementById("qrArea").classList.add("show");
+    <div
+        id="qrGrid"
+        class="qr-grid"
+    ></div>
 
-            } catch (error) {
-                console.error(error);
-                tampilkanError("Gagal memuat data. Periksa koneksi internet kamu.");
-            } finally {
-                button.disabled = false;
-                button.textContent = "🎫 Tampilkan QR Code";
-            }
-        }
 
-        function tampilkanError(pesan) {
-            const errorBox = document.getElementById("errorMsg");
-            errorBox.textContent = pesan;
-            errorBox.classList.add("show");
-        }
+    <!-- EMPTY -->
 
-        function resetForm() {
-            document.getElementById("npm").value = "";
-            document.getElementById("qrArea").classList.remove("show");
-            document.getElementById("formArea").style.display = "block";
-            document.getElementById("errorMsg").classList.remove("show");
-            document.getElementById("npm").focus();
-        }
+    <div
+        id="empty"
+        class="empty hidden"
+    >
 
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("npm").addEventListener("keydown", function (e) {
-                if (e.key === "Enter") {
-                    generateQR();
-                }
-            });
-        });
-    </script>
+        <div>
+            📭
+        </div>
+
+        <h2>
+            Belum ada mahasiswa
+        </h2>
+
+        <p>
+            Isi data mahasiswa terlebih dahulu
+            pada sheet Mahasiswa.
+        </p>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="error"
+        class="error hidden"
+    >
+
+        <div>
+            ⚠️
+        </div>
+
+        <h2>
+            Gagal mengambil data
+        </h2>
+
+        <p id="errorText">
+            Terjadi kesalahan.
+        </p>
+
+        <button
+            onclick="loadMahasiswa()"
+        >
+            Coba Lagi
+        </button>
+
+    </div>
+
+
+    <footer>
+
+        Smart Attendance © 2026
+
+    </footer>
+
+</div>
+
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbz2r2D9KU8Q1Cns_0ceH1UHtVW-OJGM35K-Vvt9SVo-O2aUf2QeUoLWClP0UVmUl9fY/exec";
+
+</script>
+
+
+<script src="qr.js"></script>
+
 </body>
+
 </html>
