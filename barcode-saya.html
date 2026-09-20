@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Saya - Absensi</title>
 
-    <!-- Library QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
@@ -28,7 +27,7 @@
 
         .phone-frame {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             background: white;
             border-radius: 28px;
             padding: 28px 24px;
@@ -155,45 +154,45 @@
             font-weight: 600;
         }
 
+        /* ====== KOTAK QR - DIPERBAIKI ====== */
         .qr-wrapper {
-    background: white;
-    border: 3px solid #0d9488;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 10px 30px rgba(13, 148, 136, 0.15);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-}
+            background: #ffffff;
+            border: 4px solid #0d9488;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
 
-#qrcode {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 100%;
-}
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
 
-#qrcode img,
-#qrcode canvas {
-    display: block !important;
-    width: 100% !important;
-    max-width: 300px !important;
-    height: auto !important;
-    aspect-ratio: 1 / 1;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-}
+        #qrcode img,
+        #qrcode canvas {
+            display: block !important;
+            width: 100% !important;
+            max-width: 320px !important;
+            height: auto !important;
+            aspect-ratio: 1 / 1;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            background: #ffffff;
+        }
 
         .qr-npm {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 800;
             color: #0f172a;
-            letter-spacing: 3px;
-            margin-top: 10px;
+            letter-spacing: 4px;
+            margin-top: 12px;
             font-family: "Courier New", monospace;
         }
 
@@ -206,6 +205,8 @@
             color: #78350f;
             line-height: 1.5;
             font-weight: 600;
+            margin-top: 16px;
+            text-align: left;
         }
 
         .hint-box b {
@@ -298,9 +299,12 @@
 
             <div class="qr-npm" id="qrNpm">-</div>
 
-            <div class="hint-box" style="margin-top: 16px;">
-                💡 <b>Tips:</b> Naikkan kecerahan layar HP kamu
-                biar QR Code gampang discan dosen.
+            <div class="hint-box">
+                💡 <b>Tips supaya gampang discan:</b><br>
+                1. Naikkan kecerahan layar HP ke 100%<br>
+                2. Matikan mode malam / dark mode<br>
+                3. Jarak kamera 15-25 cm dari QR<br>
+                4. Bersihkan layar HP dari sidik jari
             </div>
 
             <button class="btn-reset" onclick="resetForm()">
@@ -315,7 +319,7 @@
 
     <script>
         // ============================================
-        // API URL — SAMAKAN DENGAN index.html
+        // API URL — GANTI DENGAN URL WEB APP MILIKMU
         // ============================================
         const API_URL = "https://script.google.com/macros/s/AKfycbzwTa_k9Qb9gbSKe7SmkbXpRDbWtS0MEGAwE3GKqvXl7Mga2ANgtxBSuXQ1Wmx8HiAcRQ/exec";
 
@@ -327,10 +331,8 @@
             const npm = npmInput.value.trim();
             const errorBox = document.getElementById("errorMsg");
 
-            // Reset error
             errorBox.classList.remove("show");
 
-            // Validasi input
             if (!npm) {
                 tampilkanError("Silakan masukkan NPM terlebih dahulu.");
                 return;
@@ -346,7 +348,6 @@
             button.textContent = "Memeriksa...";
 
             try {
-                // Ambil data mahasiswa dari API
                 const response = await fetch(
                     API_URL + "?action=getMahasiswa&nocache=" + Date.now()
                 );
@@ -357,7 +358,6 @@
 
                 if (!result.success) throw new Error(result.message);
 
-                // Cari mahasiswa dengan NPM yang cocok
                 const mahasiswa = result.data.find(function (mhs) {
                     return String(mhs.npm).trim() === npm;
                 });
@@ -369,7 +369,6 @@
                     return;
                 }
 
-                // Tampilkan data mahasiswa
                 document.getElementById("studentName").textContent = mahasiswa.nama || "-";
                 document.getElementById("studentClass").textContent = mahasiswa.kelas || "-";
                 document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
@@ -379,17 +378,16 @@
                 const qrBox = document.getElementById("qrcode");
                 qrBox.innerHTML = "";
 
-                // Generate QR Code baru
+                // Generate QR Code baru — UKURAN BESAR & TAJAM
                 new QRCode(qrBox, {
                     text: String(mahasiswa.npm),
-                    width: 240,
-                    height: 240,
-                    colorDark: "#0f172a",
+                    width: 320,
+                    height: 320,
+                    colorDark: "#000000",
                     colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
+                    correctLevel: QRCode.CorrectLevel.M
                 });
 
-                // Sembunyikan form, tampilkan QR
                 document.getElementById("formArea").style.display = "none";
                 document.getElementById("qrArea").classList.add("show");
 
@@ -402,18 +400,12 @@
             }
         }
 
-        // ============================================
-        // TAMPILKAN ERROR
-        // ============================================
         function tampilkanError(pesan) {
             const errorBox = document.getElementById("errorMsg");
             errorBox.textContent = pesan;
             errorBox.classList.add("show");
         }
 
-        // ============================================
-        // RESET FORM
-        // ============================================
         function resetForm() {
             document.getElementById("npm").value = "";
             document.getElementById("qrArea").classList.remove("show");
@@ -422,9 +414,6 @@
             document.getElementById("npm").focus();
         }
 
-        // ============================================
-        // ENTER KEY UNTUK SUBMIT
-        // ============================================
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("npm").addEventListener("keydown", function (e) {
                 if (e.key === "Enter") {
