@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Saya - Absensi</title>
 
-    <!-- LIBRARY BARU: qrcode (bukan qrcodejs) -->
+    <!-- Library QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
     <style>
@@ -142,32 +142,31 @@
             margin-bottom: 20px;
         }
 
+        /* ============================================
+           KOTAK QR — SEPERTI PDF (kotak sempurna)
+           ============================================ */
         .qr-box {
             background: #ffffff;
-            margin: 0 auto 12px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0 auto 16px auto;
             width: 100%;
+            max-width: 340px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
         }
 
         #qrcodeCanvas {
-    display: block;
-    width: 320px;
-    height: 320px;
-    max-width: 100%;
-    background: #ffffff;
-}
-
-        .npm-text {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 600;
-            letter-spacing: 2px;
-            margin-top: 8px;
-            font-family: "Courier New", monospace;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
+        /* ============================================
+           LABEL SEPERTI PDF
+           ============================================ */
         .qr-label {
             margin-top: 20px;
             padding-top: 16px;
@@ -188,6 +187,15 @@
             font-size: 12px;
             color: #64748b;
             font-weight: 500;
+        }
+
+        .npm-text {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 12px;
+            font-family: "Courier New", monospace;
         }
 
         .tips-box {
@@ -287,8 +295,8 @@
             <div class="npm-text" id="qrNpm">-</div>
 
             <div class="qr-label">
-                <b>QR ABSENSI MAHASISWA</b>
-                <span>Tunjukkan ke dosen untuk absensi</span>
+                <b>QR ABSENSI KELAS</b>
+                <span>Satu QR untuk semua mahasiswa</span>
             </div>
 
             <div class="tips-box">
@@ -306,7 +314,8 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzwTa_k9Qb9gbSKe7SmkbXpRDbWtS0MEGAwE3GKqvXl7Mga2ANgtxBSuXQ1Wmx8HiAcRQ/exec";
+        // GANTI dengan URL Web App milikmu
+        const API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
 
         async function generateQR() {
             const npmInput = document.getElementById("npm");
@@ -359,8 +368,8 @@
                 const canvas = document.getElementById("qrcodeCanvas");
 
                 await QRCode.toCanvas(canvas, String(mahasiswa.npm), {
-                    width: 320,
-                    margin: 2,
+                    width: 340,
+                    margin: 3,
                     color: {
                         dark: "#000000",
                         light: "#ffffff"
