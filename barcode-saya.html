@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Saya - Absensi</title>
 
-    <!-- ⚠️ LIBRARY BARU: qrcode (bukan qrcodejs) -->
+    <!-- LIBRARY BARU: qrcode (bukan qrcodejs) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
     <style>
@@ -142,7 +142,6 @@
             margin-bottom: 20px;
         }
 
-        /* ====== KOTAK QR ====== */
         .qr-box {
             background: #ffffff;
             margin: 0 auto 12px auto;
@@ -357,9 +356,6 @@
                 document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
                 document.getElementById("qrNpm").textContent = mahasiswa.npm;
 
-                // ============================================
-                // GENERATE QR PAKAI LIBRARY BARU (qrcode)
-                // ============================================
                 const canvas = document.getElementById("qrcodeCanvas");
 
                 await QRCode.toCanvas(canvas, String(mahasiswa.npm), {
@@ -407,4 +403,4 @@
         });
     </script>
 </body>
-</html>s
+</html>
