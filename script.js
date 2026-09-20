@@ -355,4 +355,38 @@ async function onScanSukses(decodedText) {
 
     document.getElementById("studentName").textContent = mahasiswa.nama || "-";
     document.getElementById("studentNpm").textContent = mahasiswa.npm || "-";
-    document.getElementById("studentClass").text
+    document.getElementById("studentClass").textContent = mahasiswa.kelas || "-";
+    document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
+    document.getElementById("studentInfo").classList.remove("hidden");
+
+    await simpanAbsensi();
+}
+
+function closeScanner() {
+    const modal = document.getElementById("scannerModal");
+    modal.classList.add("hidden");
+
+    if (html5QrScanner && scannerSedangJalan) {
+        html5QrScanner
+            .stop()
+            .then(function () {
+                html5QrScanner.clear();
+                scannerSedangJalan = false;
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    }
+}
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
