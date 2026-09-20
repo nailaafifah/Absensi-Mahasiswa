@@ -180,9 +180,12 @@
 #qrcode img,
 #qrcode canvas {
     display: block !important;
-    max-width: 100% !important;
-    width: 220px !important;
-    height: 220px !important;
+    width: 100% !important;
+    max-width: 300px !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
         .qr-npm {
