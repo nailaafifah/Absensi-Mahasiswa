@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Saya - Absensi</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #ecfdf5 0%, #f0fdfa 100%);
+            color: #0f172a;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 28px;
+            padding: 28px 24px;
+            box-shadow: 0 25px 60px rgba(13, 148, 136, 0.15);
+            border: 1px solid #e2e8f0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #0f172a;
+            margin-bottom: 6px;
+            font-weight: 800;
+        }
+
+        .header p {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .form-group input:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+        }
+
+        .btn-generate {
+            width: 100%;
+            background: linear-gradient(135deg, #0d9488, #14b8a6);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(13, 148, 136, 0.4);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .barcode-result {
+            display: none;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px dashed #e2e8f0;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .barcode-result.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .student-info-box {
+            background: linear-gradient(135deg, #f0fdfa, #ecfdf5);
+            border: 1px solid #99f6e4;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 18px;
+        }
+
+        .student-info-box .name {
+            font-size: 17px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .student-info-box .detail {
+            font-size: 12px;
+            color: #0f766e;
+            font-weight: 600;
+        }
+
+        .barcode-wrapper {
+            background: white;
+            border: 3px solid #0d9488;
+            border-radius: 16px;
+            padding: 20px 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.15);
+        }
+
+        #barcode {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .barcode-npm {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: 3px;
+            margin-top: 10px;
+            font-family: "Courier New", monospace;
+        }
+
+        .hint-box {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 12px;
+            color: #78350f;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .hint-box b {
+            color: #92400e;
+        }
+
+        .btn-reset {
+            width: 100%;
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover {
+            background: #e2e8f0;
+        }
+
+        .error-msg {
+            display: none;
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 12px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid #fca5a5;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="phone-frame">
+
+        <div class="header">
+            <div class="header-icon">🎫</div>
+            <h1>Barcode Saya</h1>
+            <p>Tunjukkan barcode ini ke dosen<br>untuk absensi kehadiran</p>
+        </div>
+
+        <div id="formArea">
+            <div class="form-group">
+                <label for="npm">Masukkan NPM Kamu</label>
+                <input
+                    type="text"
+                    id="npm"
+                    placeholder="Contoh: 2410511074"
+                    autocomplete="off"
+                    inputmode="numeric"
+                >
+            </div>
+
+            <button class="btn-generate" onclick="generateBarcode()">
+                🎫 Tampilkan Barcode
+            </button>
+
+            <div id="errorMsg" class="error-msg"></div>
+        </div>
+
+        <div id="barcodeArea" class="barcode-result">
+            <div class="student-info-box">
+                <div class="name" id="studentName">-</div>
+                <div class="detail">
+                    <span id="studentClass">-</span> • <span id="studentMajor">-</span>
+                </div>
+            </div>
+
+            <div class="barcode-wrapper">
+                <svg id="barcode"></svg>
+                <div class="barcode-npm" id="barcodeNpm">-</div>
+            </div>
+
+            <div class="hint-box">
+                💡 <b>Tips:</b> Naikkan kecerahan layar HP kamu
+                biar barcode gampang discan dosen.
+            </div>
+
+            <button class="btn-reset" onclick="resetForm()">
+                ← Ganti NPM
+            </button>
+        </div>
+
+        <div class="footer">
+            Sistem Absensi Mahasiswa
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzwTa_k9Qb9gbSKe7SmkbXpRDbWtS0MEGAwE3GKqvXl7Mga2ANgtxBSuXQ1Wmx8HiAcRQ/exec";
+
+        async function generateBarcode() {
+            const npmInput = document.getElementById("npm");
+            const npm = npmInput.value.trim();
+            const errorBox = document.getElementById("errorMsg");
+
+            errorBox.classList.remove("show");
+
+            if (!npm) {
+                tampilkanError("Silakan masukkan NPM terlebih dahulu.");
+                return;
+            }
+
+            if (!/^\d+$/.test(npm)) {
+                tampilkanError("NPM hanya boleh berisi angka.");
+                return;
+            }
+
+            const button = document.querySelector(".btn-generate");
+            button.disabled = true;
+            button.textContent = "Memeriksa...";
+
+            try {
+                const response = await fetch(
+                    API_URL + "?action=getMahasiswa&nocache=" + Date.now()
+                );
+
+                if (!response.ok) throw new Error("Gagal menghubungi server.");
+
+                const result = await response.json();
+
+                if (!result.success) throw new Error(result.message);
+
+                const mahasiswa = result.data.find(function (mhs) {
+                    return String(mhs.npm).trim() === npm;
+                });
+
+                if (!mahasiswa) {
+                    tampilkanError("NPM " + npm + " tidak terdaftar.");
+                    button.disabled = false;
+                    button.textContent = "🎫 Tampilkan Barcode";
+                    return;
+                }
+
+                document.getElementById("studentName").textContent = mahasiswa.nama || "-";
+                document.getElementById("studentClass").textContent = mahasiswa.kelas || "-";
+                document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
+                document.getElementById("barcodeNpm").textContent = mahasiswa.npm;
+
+                JsBarcode("#barcode", String(mahasiswa.npm), {
+                    format: "CODE128",
+                    width: 2.5,
+                    height: 90,
+                    displayValue: false,
+                    margin: 10,
+                    background: "#ffffff",
+                    lineColor: "#0f172a"
+                });
+
+                document.getElementById("formArea").style.display = "none";
+                document.getElementById("barcodeArea").classList.add("show");
+
+            } catch (error) {
+                console.error(error);
+                tampilkanError("Gagal memuat data. Periksa koneksi internet kamu.");
+            } finally {
+                button.disabled = false;
+                button.textContent = "🎫 Tampilkan Barcode";
+            }
+        }
+
+        function tampilkanError(pesan) {
+            const errorBox = document.getElementById("errorMsg");
+            errorBox.textContent = pesan;
+            errorBox.classList.add("show");
+        }
+
+        function resetForm() {
+            document.getElementById("npm").value = "";
+            document.getElementById("barcodeArea").classList.remove("show");
+            document.getElementById("formArea").style.display = "block";
+            document.getElementById("errorMsg").classList.remove("show");
+            document.getElementById("npm").focus();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("npm").addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    generateBarcode();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
