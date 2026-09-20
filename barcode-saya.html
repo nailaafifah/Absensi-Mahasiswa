@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QR Code Saya - Absensi</title>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:"Inter","Segoe UI",Arial,sans-serif; }
 body { min-height:100vh; background:#f0fdfa; color:#0f172a; padding:20px; display:flex; align-items:center; justify-content:center; }
@@ -26,11 +26,12 @@ body { min-height:100vh; background:#f0fdfa; color:#0f172a; padding:20px; displa
 .qr-eyebrow { font-size:12px; font-weight:800; letter-spacing:3px; color:#475569; text-transform:uppercase; }
 .qr-title { font-size:26px; font-weight:800; margin:6px 0 20px; }
 
-/* Kotak QR: gambar persegi, tidak mungkin melebar */
-.qr-box { width:100%; max-width:340px; margin:0 auto; background:#fff; }
-.qr-box img { display:block; width:100%; height:auto; aspect-ratio:1/1; image-rendering:pixelated; border:0; border-radius:0; }
+/* Kotak QR persegi + quiet zone putih (padding) */
+.qr-box { width:100%; max-width:340px; margin:0 auto; background:#fff; padding:14px; }
+#qrcode { width:100%; }
+#qrcode img, #qrcode canvas { width:100% !important; height:auto !important; aspect-ratio:1/1; image-rendering:pixelated; }
 
-.npm-text { font-size:15px; color:#475569; font-weight:700; letter-spacing:3px; margin-top:14px; font-family:"Courier New",monospace; }
+.npm-text { font-size:15px; color:#475569; font-weight:700; letter-spacing:3px; margin-top:10px; font-family:"Courier New",monospace; }
 .student-name { font-size:18px; font-weight:800; margin-top:18px; }
 .student-detail { font-size:12px; color:#0f766e; font-weight:600; margin-top:4px; }
 .qr-label { margin-top:20px; padding-top:16px; border-top:2px dashed #e2e8f0; }
@@ -46,7 +47,7 @@ body { min-height:100vh; background:#f0fdfa; color:#0f172a; padding:20px; displa
 </head>
 <body>
 <div class="card">
-  <span class="ver">v2</span>
+  <span class="ver">v3</span>
 
   <div id="formArea">
     <div class="header">
@@ -58,7 +59,7 @@ body { min-height:100vh; background:#f0fdfa; color:#0f172a; padding:20px; displa
       <label for="npm">Masukkan NPM Kamu</label>
       <input type="text" id="npm" placeholder="Contoh: 2410511074" autocomplete="off" inputmode="numeric">
     </div>
-    <button class="btn-generate" onclick="generateQR()">🎫 Tampilkan QR Code</button>
+    <button id="btnGenerate" class="btn-generate" type="button">🎫 Tampilkan QR Code</button>
     <div id="errorMsg" class="error-msg"></div>
   </div>
 
@@ -66,7 +67,7 @@ body { min-height:100vh; background:#f0fdfa; color:#0f172a; padding:20px; displa
     <div class="qr-eyebrow">Absensi</div>
     <div class="qr-title">Scan QR Code</div>
 
-    <div class="qr-box"><img id="qrImg" alt="QR Code"></div>
+    <div class="qr-box"><div id="qrcode"></div></div>
 
     <div class="npm-text" id="qrNpm">-</div>
     <div class="student-name" id="studentName">-</div>
@@ -85,75 +86,92 @@ body { min-height:100vh; background:#f0fdfa; color:#0f172a; padding:20px; displa
       4. Bersihkan layar HP dari sidik jari
     </div>
 
-    <button class="btn-reset" onclick="resetForm()">← Ganti NPM</button>
+    <button class="btn-reset" type="button" id="btnReset">← Ganti NPM</button>
   </div>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
+var API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
 
-async function generateQR() {
-  const npm = document.getElementById("npm").value.trim();
-  const errorBox = document.getElementById("errorMsg");
-  errorBox.classList.remove("show");
-
-  if (!npm) return tampilkanError("Silakan masukkan NPM terlebih dahulu.");
-  if (!/^\d+$/.test(npm)) return tampilkanError("NPM hanya boleh berisi angka.");
-
-  const button = document.querySelector(".btn-generate");
-  button.disabled = true;
-  button.textContent = "Memeriksa...";
-
-  try {
-    const response = await fetch(API_URL + "?action=getMahasiswa&nocache=" + Date.now());
-    if (!response.ok) throw new Error("Gagal menghubungi server.");
-    const result = await response.json();
-    if (!result.success) throw new Error(result.message);
-
-    const mhs = result.data.find(m => String(m.npm).trim() === npm);
-    if (!mhs) return tampilkanError("NPM " + npm + " tidak terdaftar.");
-
-    document.getElementById("studentName").textContent = mhs.nama || "-";
-    document.getElementById("studentClass").textContent = mhs.kelas || "-";
-    document.getElementById("studentMajor").textContent = mhs.jurusan || "-";
-    document.getElementById("qrNpm").textContent = mhs.npm;
-
-    // QR persegi: modul 12px, quiet zone 4 modul
-    const dataUrl = await QRCode.toDataURL(String(mhs.npm), {
-      scale: 12,
-      margin: 4,
-      errorCorrectionLevel: "M",
-      color: { dark: "#000000", light: "#ffffff" }
-    });
-    document.getElementById("qrImg").src = dataUrl;
-
-    document.getElementById("formArea").style.display = "none";
-    document.getElementById("qrArea").classList.add("show");
-  } catch (e) {
-    console.error(e);
-    tampilkanError("Gagal memuat data. Periksa koneksi internet kamu.");
-  } finally {
-    button.disabled = false;
-    button.textContent = "🎫 Tampilkan QR Code";
-  }
-}
+function el(id) { return document.getElementById(id); }
 
 function tampilkanError(p) {
-  const b = document.getElementById("errorMsg");
+  var b = el("errorMsg");
   b.textContent = p;
   b.classList.add("show");
 }
 
+// Ambil data mahasiswa. Kalau gagal, kembalikan null (QR tetap dibuat).
+async function cariMahasiswa(npm) {
+  try {
+    var res = await fetch(API_URL + "?action=getMahasiswa&nocache=" + Date.now());
+    var json = await res.json();
+    if (!json.success) return { error: json.message || "Data tidak tersedia" };
+    var found = json.data.find(function (m) { return String(m.npm).trim() === npm; });
+    return found ? { data: found } : { notFound: true };
+  } catch (e) {
+    console.warn("API gagal:", e);
+    return null;
+  }
+}
+
+function buatQR(npm) {
+  var box = el("qrcode");
+  box.innerHTML = "";
+  new QRCode(box, {
+    text: npm,
+    width: 420,
+    height: 420,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+async function generateQR() {
+  var npm = el("npm").value.trim();
+  el("errorMsg").classList.remove("show");
+
+  if (!npm) return tampilkanError("Silakan masukkan NPM terlebih dahulu.");
+  if (!/^\d+$/.test(npm)) return tampilkanError("NPM hanya boleh berisi angka.");
+  if (typeof QRCode === "undefined") return tampilkanError("Library QR gagal dimuat. Refresh halaman (Ctrl+Shift+R).");
+
+  var btn = el("btnGenerate");
+  btn.disabled = true;
+  btn.textContent = "Memeriksa...";
+
+  var hasil = await cariMahasiswa(npm);
+
+  btn.disabled = false;
+  btn.textContent = "🎫 Tampilkan QR Code";
+
+  if (hasil && hasil.notFound) {
+    return tampilkanError("NPM " + npm + " tidak terdaftar.");
+  }
+
+  var mhs = (hasil && hasil.data) ? hasil.data : null;
+  el("studentName").textContent  = mhs ? (mhs.nama || "-")    : "Mahasiswa";
+  el("studentClass").textContent = mhs ? (mhs.kelas || "-")   : "-";
+  el("studentMajor").textContent = mhs ? (mhs.jurusan || "-") : "-";
+  el("qrNpm").textContent = npm;
+
+  el("formArea").style.display = "none";
+  el("qrArea").classList.add("show");
+  buatQR(npm);
+}
+
 function resetForm() {
-  document.getElementById("npm").value = "";
-  document.getElementById("qrArea").classList.remove("show");
-  document.getElementById("formArea").style.display = "block";
-  document.getElementById("errorMsg").classList.remove("show");
-  document.getElementById("npm").focus();
+  el("npm").value = "";
+  el("qrArea").classList.remove("show");
+  el("formArea").style.display = "block";
+  el("errorMsg").classList.remove("show");
+  el("npm").focus();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("npm").addEventListener("keydown", function (e) {
+  el("btnGenerate").addEventListener("click", generateQR);
+  el("btnReset").addEventListener("click", resetForm);
+  el("npm").addEventListener("keydown", function (e) {
     if (e.key === "Enter") generateQR();
   });
 });
