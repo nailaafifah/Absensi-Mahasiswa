@@ -8,6 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
+        /* ============================================
+           RESET & BASE
+           ============================================ */
         * {
             margin: 0;
             padding: 0;
@@ -25,6 +28,9 @@
             justify-content: center;
         }
 
+        /* ============================================
+           CARD UTAMA
+           ============================================ */
         .card {
             width: 100%;
             max-width: 420px;
@@ -35,7 +41,9 @@
             text-align: center;
         }
 
-        /* HEADER */
+        /* ============================================
+           HEADER
+           ============================================ */
         .header-icon {
             font-size: 38px;
             margin-bottom: 8px;
@@ -55,7 +63,9 @@
             margin-bottom: 24px;
         }
 
-        /* FORM */
+        /* ============================================
+           FORM INPUT NPM
+           ============================================ */
         .form-group {
             margin-bottom: 16px;
             text-align: left;
@@ -89,6 +99,9 @@
             box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
         }
 
+        /* ============================================
+           TOMBOL GENERATE
+           ============================================ */
         .btn-generate {
             width: 100%;
             background: linear-gradient(135deg, #0d9488, #14b8a6);
@@ -114,7 +127,9 @@
             transform: none;
         }
 
-        /* HASIL QR */
+        /* ============================================
+           AREA HASIL QR
+           ============================================ */
         .qr-result {
             display: none;
             margin-top: 8px;
@@ -130,7 +145,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Nama Mahasiswa */
         .student-name {
             font-size: 18px;
             font-weight: 800;
@@ -145,10 +159,11 @@
             margin-bottom: 20px;
         }
 
-        /* ====== QR CODE POLOS (seperti PDF) ====== */
+        /* ============================================
+           QR CODE — BAGIAN PENTING
+           ============================================ */
         .qr-box {
             background: #ffffff;
-            padding: 0;
             margin: 0 auto 12px auto;
             display: flex;
             justify-content: center;
@@ -163,17 +178,16 @@
             background: #ffffff;
         }
 
-        #qrcode img,
-        #qrcode canvas {
+        #qrcode img {
             display: block !important;
             width: 320px !important;
             height: 320px !important;
             max-width: 100% !important;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
         }
 
-        /* NPM di bawah QR */
+        /* ============================================
+           NPM DI BAWAH QR
+           ============================================ */
         .npm-text {
             font-size: 14px;
             color: #64748b;
@@ -183,7 +197,9 @@
             font-family: "Courier New", monospace;
         }
 
-        /* Label seperti PDF */
+        /* ============================================
+           LABEL QR
+           ============================================ */
         .qr-label {
             margin-top: 20px;
             padding-top: 16px;
@@ -206,7 +222,9 @@
             font-weight: 500;
         }
 
-        /* Tips */
+        /* ============================================
+           TIPS BOX
+           ============================================ */
         .tips-box {
             background: #fef3c7;
             border: 1px solid #fcd34d;
@@ -226,7 +244,9 @@
             margin-bottom: 4px;
         }
 
-        /* Tombol Reset */
+        /* ============================================
+           TOMBOL RESET
+           ============================================ */
         .btn-reset {
             width: 100%;
             background: #f1f5f9;
@@ -245,7 +265,9 @@
             background: #e2e8f0;
         }
 
-        /* Error */
+        /* ============================================
+           ERROR MESSAGE
+           ============================================ */
         .error-msg {
             display: none;
             margin-top: 14px;
@@ -325,14 +347,8 @@
     </div>
 
     <script>
-        // ============================================
-        // API URL — GANTI DENGAN URL WEB APP MILIKMU
-        // ============================================
         const API_URL = "https://script.google.com/macros/s/AKfycbzwTa_k9Qb9gbSKe7SmkbXpRDbWtS0MEGAwE3GKqvXl7Mga2ANgtxBSuXQ1Wmx8HiAcRQ/exec";
 
-        // ============================================
-        // GENERATE QR CODE
-        // ============================================
         async function generateQR() {
             const npmInput = document.getElementById("npm");
             const npm = npmInput.value.trim();
@@ -384,7 +400,6 @@
                 const qrBox = document.getElementById("qrcode");
                 qrBox.innerHTML = "";
 
-                // Generate QR — UKURAN BESAR, TAJAM, SEPERTI PDF
                 new QRCode(qrBox, {
                     text: String(mahasiswa.npm),
                     width: 320,
