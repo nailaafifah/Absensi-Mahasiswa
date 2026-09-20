@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Mahasiswa - Scan NPM</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- HEADER BARU -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="logo-circle">📋</div>
+            <div>
+                <h1>Absensi Mahasiswa</h1>
+                <p>Scan NPM untuk mencatat kehadiran</p>
+            </div>
+        </div>
+        <button class="btn-refresh" onclick="loadDashboard()">
+            <span>↻</span> Refresh
+        </button>
+    </header>
+
+    <!-- STATISTIK BARU (4 kotak sejajar, lebih minimalis) -->
+    <section class="stats-row">
+        <div class="stat-item stat-total">
+            <div class="stat-number" id="totalMahasiswa">0</div>
+            <div class="stat-text">Total Mahasiswa</div>
+        </div>
+        <div class="stat-item stat-hadir">
+            <div class="stat-number" id="hadir">0</div>
+            <div class="stat-text">Hadir</div>
+        </div>
+        <div class="stat-item stat-belum">
+            <div class="stat-number" id="belumHadir">0</div>
+            <div class="stat-text">Belum Hadir</div>
+        </div>
+        <div class="stat-item stat-persen">
+            <div class="stat-number"><span id="persentase">0</span>%</div>
+            <div class="stat-text">Kehadiran</div>
+        </div>
+    </section>
+
+    <!-- AREA UTAMA -->
+    <section class="main-area">
+
+        <!-- SCAN CARD -->
+        <div class="card scan-card">
+            <div class="card-tag">SCAN NPM</div>
+            <h2>Scan NPM Mahasiswa</h2>
+            <p class="card-desc">
+                Arahkan kamera ke barcode atau QR yang berisi NPM mahasiswa.
+                Sistem akan otomatis mencatat kehadiran.
+            </p>
+
+            <div class="scan-visual">
+                <div class="scan-icon">📷</div>
+                <div class="scan-text">Tekan tombol untuk membuka kamera</div>
+            </div>
+
+            <button class="btn-scan" onclick="openScanner()">
+                📷 Buka Kamera Scanner
+            </button>
+
+            <div class="scan-note">
+                Hasil scan langsung tersimpan ke Spreadsheet
+            </div>
+        </div>
+
+        <!-- FORM CARD -->
+        <div class="card form-card">
+            <div class="card-tag">INPUT MANUAL</div>
+            <h2>Input NPM</h2>
+            <p class="card-desc">
+                Masukkan NPM secara manual jika kamera tidak tersedia.
+            </p>
+
+            <div class="input-wrap">
+                <label for="npm">NPM Mahasiswa</label>
+                <input type="text" id="npm" placeholder="Contoh: 2410511074" autocomplete="off">
+            </div>
+
+            <button id="checkButton" class="btn-check" onclick="cekMahasiswa()">
+                🔍 Cek Mahasiswa
+            </button>
+
+            <!-- Info Mahasiswa -->
+            <div id="studentInfo" class="student-card hidden">
+                <div class="student-avatar">👤</div>
+                <div class="student-detail">
+                    <h3 id="studentName">-</h3>
+                    <div class="student-row"><span>NPM</span><b id="studentNpm">-</b></div>
+                    <div class="student-row"><span>Kelas</span><b id="studentClass">-</b></div>
+                    <div class="student-row"><span>Jurusan</span><b id="studentMajor">-</b></div>
+                </div>
+            </div>
+
+            <button id="absenButton" class="btn-absen hidden" onclick="simpanAbsensi()">
+                ✓ Konfirmasi Absen
+            </button>
+
+            <div id="message" class="message hidden"></div>
+        </div>
+    </section>
+
+    <!-- DAFTAR KEHADIRAN -->
+    <section class="card list-card">
+        <div class="card-header">
+            <div>
+                <div class="card-tag">REKAP HARI INI</div>
+                <h2>Daftar Kehadiran</h2>
+            </div>
+            <span id="dateToday" class="date-pill">-</span>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>NPM</th>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Waktu</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- BELUM HADIR -->
+    <section class="card absent-card">
+        <div class="card-header">
+            <div>
+                <div class="card-tag">BELUM ABSEN</div>
+                <h2>Mahasiswa Belum Hadir</h2>
+            </div>
+        </div>
+        <div id="absentList" class="absent-grid"></div>
+    </section>
+
+    <footer class="app-footer">
+        <b>Absensi Mahasiswa</b>
+        <span>Sistem Absensi Berbasis Scan NPM</span>
+    </footer>
+</div>
+
+<!-- MODAL SCANNER -->
+<div id="scannerModal" class="scanner-modal hidden">
+    <div class="scanner-box">
+        <div class="scanner-header">
+            <h3>Scan NPM Mahasiswa</h3>
+            <button type="button" class="scanner-close" onclick="closeScanner()">✕</button>
+        </div>
+        <div id="reader"></div>
+        <p class="scanner-hint">
+            Arahkan kamera ke barcode atau QR yang berisi NPM.
+        </p>
+        <div id="scannerError" class="scanner-error hidden"></div>
+    </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
+</script>
+<script src="script.js"></script>
+</body>
+</html>
