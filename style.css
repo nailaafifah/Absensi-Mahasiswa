@@ -1,5 +1,5 @@
 /* ============================================
-   ABSENSI MAHASISWA - STYLE BARU
+   ABSENSI MAHASISWA - STYLE
    Tema: Hijau Tosca Modern
    ============================================ */
 
@@ -22,7 +22,7 @@ body {
     margin: auto;
 }
 
-/* ============ HEADER ============ */
+/* HEADER */
 .app-header {
     background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
     border-radius: 20px;
@@ -84,7 +84,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* ============ STATISTIK ============ */
+/* STATISTIK */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -126,7 +126,7 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* ============ MAIN AREA ============ */
+/* MAIN */
 .main-area {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -134,7 +134,6 @@ body {
     margin-top: 18px;
 }
 
-/* ============ CARD ============ */
 .card {
     background: white;
     border-radius: 20px;
@@ -169,7 +168,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* ============ SCAN CARD ============ */
+/* SCAN CARD */
 .scan-card {
     text-align: center;
 }
@@ -218,6 +217,27 @@ body {
     box-shadow: 0 12px 25px rgba(13, 148, 136, 0.4);
 }
 
+.btn-barcode-link {
+    display: block;
+    width: 100%;
+    background: #f0fdfa;
+    color: #0f766e;
+    border: 2px dashed #14b8a6;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 12px;
+    transition: all 0.2s;
+}
+
+.btn-barcode-link:hover {
+    background: #ccfbf1;
+    border-color: #0d9488;
+}
+
 .scan-note {
     font-size: 11px;
     color: #94a3b8;
@@ -225,7 +245,7 @@ body {
     font-style: italic;
 }
 
-/* ============ FORM CARD ============ */
+/* FORM CARD */
 .input-wrap {
     margin-top: 6px;
 }
@@ -292,7 +312,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* ============ STUDENT CARD ============ */
+/* STUDENT CARD */
 .student-card {
     display: flex;
     gap: 14px;
@@ -339,7 +359,7 @@ body {
     color: #0f172a;
 }
 
-/* ============ MESSAGE ============ */
+/* MESSAGE */
 .message {
     margin-top: 14px;
     padding: 14px;
@@ -361,7 +381,7 @@ body {
     border: 1px solid #fca5a5;
 }
 
-/* ============ LIST CARD ============ */
+/* LIST */
 .list-card,
 .absent-card {
     margin-top: 18px;
@@ -385,7 +405,6 @@ body {
     font-weight: 700;
 }
 
-/* ============ TABLE ============ */
 .table-wrap {
     overflow-x: auto;
 }
@@ -428,7 +447,7 @@ tbody tr:hover {
     letter-spacing: 0.5px;
 }
 
-/* ============ ABSENT GRID ============ */
+/* ABSENT */
 .absent-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -467,7 +486,7 @@ tbody tr:hover {
     font-size: 14px;
 }
 
-/* ============ SCANNER MODAL ============ */
+/* SCANNER MODAL */
 .scanner-modal {
     position: fixed;
     inset: 0;
@@ -543,7 +562,7 @@ tbody tr:hover {
     font-weight: 600;
 }
 
-/* ============ FOOTER ============ */
+/* FOOTER */
 .app-footer {
     text-align: center;
     padding: 30px 10px;
@@ -562,12 +581,11 @@ tbody tr:hover {
     display: block;
 }
 
-/* ============ HIDDEN ============ */
 .hidden {
     display: none !important;
 }
 
-/* ============ RESPONSIVE ============ */
+/* RESPONSIVE */
 @media (max-width: 900px) {
     .stats-row {
         grid-template-columns: repeat(2, 1fr);
