@@ -1,368 +1,162 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Saya - Absensi</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Saya - Absensi</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Inter","Segoe UI",Arial,sans-serif; }
+body { min-height:100vh; background:#f0fdfa; color:#0f172a; padding:20px; display:flex; align-items:center; justify-content:center; }
+.card { position:relative; width:100%; max-width:460px; background:#fff; border-radius:20px; padding:32px 24px; box-shadow:0 8px 30px rgba(13,148,136,.12); text-align:center; }
+.ver { position:absolute; top:10px; right:14px; font-size:10px; color:#94a3b8; font-weight:700; }
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+.header-icon { font-size:38px; margin-bottom:8px; }
+.header h1 { font-size:20px; font-weight:800; margin-bottom:4px; }
+.header p { font-size:12px; color:#64748b; line-height:1.5; margin-bottom:24px; }
+.form-group { margin-bottom:16px; text-align:left; }
+.form-group label { display:block; font-size:12px; font-weight:700; color:#334155; margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
+.form-group input { width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; outline:none; text-align:center; font-weight:700; letter-spacing:1px; }
+.form-group input:focus { border-color:#14b8a6; box-shadow:0 0 0 4px rgba(20,184,166,.1); }
+.btn-generate { width:100%; background:linear-gradient(135deg,#0d9488,#14b8a6); color:#fff; border:none; padding:15px; border-radius:12px; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 8px 20px rgba(13,148,136,.3); }
+.btn-generate:disabled { opacity:.6; cursor:not-allowed; }
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Inter", "Segoe UI", Arial, sans-serif;
-        }
+.qr-result { display:none; }
+.qr-result.show { display:block; }
+.qr-eyebrow { font-size:12px; font-weight:800; letter-spacing:3px; color:#475569; text-transform:uppercase; }
+.qr-title { font-size:26px; font-weight:800; margin:6px 0 20px; }
 
-        body {
-            min-height: 100vh;
-            background: #f0fdfa;
-            color: #0f172a;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+/* Kotak QR: gambar persegi, tidak mungkin melebar */
+.qr-box { width:100%; max-width:340px; margin:0 auto; background:#fff; }
+.qr-box img { display:block; width:100%; height:auto; aspect-ratio:1/1; image-rendering:pixelated; border:0; border-radius:0; }
 
-        .card {
-            width: 100%;
-            max-width: 460px;
-            background: white;
-            border-radius: 20px;
-            padding: 32px 24px;
-            box-shadow: 0 8px 30px rgba(13, 148, 136, 0.12);
-            text-align: center;
-        }
-
-        /* ---------- FORM ---------- */
-        .header-icon { font-size: 38px; margin-bottom: 8px; }
-
-        .header h1 {
-            font-size: 20px;
-            margin-bottom: 4px;
-            font-weight: 800;
-        }
-
-        .header p {
-            font-size: 12px;
-            color: #64748b;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-
-        .form-group { margin-bottom: 16px; text-align: left; }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.2s;
-            text-align: center;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .form-group input:focus {
-            border-color: #14b8a6;
-            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
-        }
-
-        .btn-generate {
-            width: 100%;
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3);
-            transition: all 0.2s;
-        }
-
-        .btn-generate:hover { transform: translateY(-2px); }
-        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        /* ---------- HASIL QR (gaya PDF) ---------- */
-        .qr-result { display: none; animation: fadeIn 0.4s ease; }
-        .qr-result.show { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .qr-eyebrow {
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 3px;
-            color: #475569;
-            text-transform: uppercase;
-        }
-
-        .qr-title {
-            font-size: 26px;
-            font-weight: 800;
-            color: #0f172a;
-            margin: 6px 0 20px;
-        }
-
-        /* Kotak QR: selalu persegi, tanpa border, tanpa distorsi */
-        .qr-box {
-            width: 100%;
-            max-width: 340px;
-            aspect-ratio: 1 / 1;
-            margin: 0 auto;
-            background: #ffffff;
-        }
-
-        #qrcodeCanvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            image-rendering: pixelated;      /* piksel tetap tajam */
-            image-rendering: crisp-edges;
-        }
-
-        .npm-text {
-            font-size: 15px;
-            color: #475569;
-            font-weight: 700;
-            letter-spacing: 3px;
-            margin-top: 14px;
-            font-family: "Courier New", monospace;
-        }
-
-        .student-name {
-            font-size: 18px;
-            font-weight: 800;
-            margin-top: 18px;
-        }
-
-        .student-detail {
-            font-size: 12px;
-            color: #0f766e;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        .qr-label {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 2px dashed #e2e8f0;
-        }
-
-        .qr-label b {
-            display: block;
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
-
-        .qr-label span { font-size: 12px; color: #64748b; }
-
-        .tips-box {
-            background: #fef3c7;
-            border: 1px solid #fcd34d;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 11px;
-            color: #78350f;
-            line-height: 1.7;
-            font-weight: 600;
-            margin-top: 18px;
-            text-align: left;
-        }
-
-        .tips-box b { color: #92400e; display: block; margin-bottom: 4px; }
-
-        .btn-reset {
-            width: 100%;
-            background: #f1f5f9;
-            color: #475569;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 16px;
-            transition: all 0.2s;
-        }
-
-        .btn-reset:hover { background: #e2e8f0; }
-
-        .error-msg {
-            display: none;
-            margin-top: 14px;
-            padding: 12px;
-            border-radius: 12px;
-            background: #fee2e2;
-            color: #991b1b;
-            font-size: 13px;
-            font-weight: 600;
-            border: 1px solid #fca5a5;
-        }
-
-        .error-msg.show { display: block; }
-    </style>
+.npm-text { font-size:15px; color:#475569; font-weight:700; letter-spacing:3px; margin-top:14px; font-family:"Courier New",monospace; }
+.student-name { font-size:18px; font-weight:800; margin-top:18px; }
+.student-detail { font-size:12px; color:#0f766e; font-weight:600; margin-top:4px; }
+.qr-label { margin-top:20px; padding-top:16px; border-top:2px dashed #e2e8f0; }
+.qr-label b { display:block; font-size:14px; font-weight:800; letter-spacing:1px; margin-bottom:4px; }
+.qr-label span { font-size:12px; color:#64748b; }
+.tips-box { background:#fef3c7; border:1px solid #fcd34d; border-radius:12px; padding:12px; font-size:11px; color:#78350f; line-height:1.7; font-weight:600; margin-top:18px; text-align:left; }
+.tips-box b { color:#92400e; display:block; margin-bottom:4px; }
+.btn-reset { width:100%; background:#f1f5f9; color:#475569; border:none; padding:12px; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; margin-top:16px; }
+.btn-reset:hover { background:#e2e8f0; }
+.error-msg { display:none; margin-top:14px; padding:12px; border-radius:12px; background:#fee2e2; color:#991b1b; font-size:13px; font-weight:600; border:1px solid #fca5a5; }
+.error-msg.show { display:block; }
+</style>
 </head>
-
 <body>
-    <div class="card">
+<div class="card">
+  <span class="ver">v2</span>
 
-        <div id="formArea">
-            <div class="header">
-                <div class="header-icon">🎫</div>
-                <h1>QR Code Saya</h1>
-                <p>Tunjukkan QR Code ini ke dosen<br>untuk absensi kehadiran</p>
-            </div>
+  <div id="formArea">
+    <div class="header">
+      <div class="header-icon">🎫</div>
+      <h1>QR Code Saya</h1>
+      <p>Tunjukkan QR Code ini ke dosen<br>untuk absensi kehadiran</p>
+    </div>
+    <div class="form-group">
+      <label for="npm">Masukkan NPM Kamu</label>
+      <input type="text" id="npm" placeholder="Contoh: 2410511074" autocomplete="off" inputmode="numeric">
+    </div>
+    <button class="btn-generate" onclick="generateQR()">🎫 Tampilkan QR Code</button>
+    <div id="errorMsg" class="error-msg"></div>
+  </div>
 
-            <div class="form-group">
-                <label for="npm">Masukkan NPM Kamu</label>
-                <input type="text" id="npm" placeholder="Contoh: 2410511074"
-                       autocomplete="off" inputmode="numeric">
-            </div>
+  <div id="qrArea" class="qr-result">
+    <div class="qr-eyebrow">Absensi</div>
+    <div class="qr-title">Scan QR Code</div>
 
-            <button class="btn-generate" onclick="generateQR()">🎫 Tampilkan QR Code</button>
-            <div id="errorMsg" class="error-msg"></div>
-        </div>
+    <div class="qr-box"><img id="qrImg" alt="QR Code"></div>
 
-        <div id="qrArea" class="qr-result">
-            <div class="qr-eyebrow">Absensi</div>
-            <div class="qr-title">Scan QR Code</div>
+    <div class="npm-text" id="qrNpm">-</div>
+    <div class="student-name" id="studentName">-</div>
+    <div class="student-detail"><span id="studentClass">-</span> • <span id="studentMajor">-</span></div>
 
-            <div class="qr-box">
-                <canvas id="qrcodeCanvas"></canvas>
-            </div>
-
-            <div class="npm-text" id="qrNpm">-</div>
-
-            <div class="student-name" id="studentName">-</div>
-            <div class="student-detail">
-                <span id="studentClass">-</span> • <span id="studentMajor">-</span>
-            </div>
-
-            <div class="qr-label">
-                <b>QR ABSENSI MAHASISWA</b>
-                <span>Tunjukkan QR ini ke dosen untuk discan</span>
-            </div>
-
-            <div class="tips-box">
-                <b>💡 Tips supaya gampang discan:</b>
-                1. Naikkan kecerahan layar HP ke 100%<br>
-                2. Matikan mode malam / dark mode<br>
-                3. Jarak kamera 15-25 cm dari QR<br>
-                4. Bersihkan layar HP dari sidik jari
-            </div>
-
-            <button class="btn-reset" onclick="resetForm()">← Ganti NPM</button>
-        </div>
+    <div class="qr-label">
+      <b>QR ABSENSI MAHASISWA</b>
+      <span>Tunjukkan QR ini ke dosen untuk discan</span>
     </div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
+    <div class="tips-box">
+      <b>💡 Tips supaya gampang discan:</b>
+      1. Naikkan kecerahan layar HP ke 100%<br>
+      2. Matikan mode malam / dark mode<br>
+      3. Jarak kamera 15-25 cm dari QR<br>
+      4. Bersihkan layar HP dari sidik jari
+    </div>
 
-        async function generateQR() {
-            const npm = document.getElementById("npm").value.trim();
-            const errorBox = document.getElementById("errorMsg");
-            errorBox.classList.remove("show");
+    <button class="btn-reset" onclick="resetForm()">← Ganti NPM</button>
+  </div>
+</div>
 
-            if (!npm) return tampilkanError("Silakan masukkan NPM terlebih dahulu.");
-            if (!/^\d+$/.test(npm)) return tampilkanError("NPM hanya boleh berisi angka.");
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
 
-            const button = document.querySelector(".btn-generate");
-            button.disabled = true;
-            button.textContent = "Memeriksa...";
+async function generateQR() {
+  const npm = document.getElementById("npm").value.trim();
+  const errorBox = document.getElementById("errorMsg");
+  errorBox.classList.remove("show");
 
-            try {
-                const response = await fetch(API_URL + "?action=getMahasiswa&nocache=" + Date.now());
-                if (!response.ok) throw new Error("Gagal menghubungi server.");
+  if (!npm) return tampilkanError("Silakan masukkan NPM terlebih dahulu.");
+  if (!/^\d+$/.test(npm)) return tampilkanError("NPM hanya boleh berisi angka.");
 
-                const result = await response.json();
-                if (!result.success) throw new Error(result.message);
+  const button = document.querySelector(".btn-generate");
+  button.disabled = true;
+  button.textContent = "Memeriksa...";
 
-                const mahasiswa = result.data.find(function (mhs) {
-                    return String(mhs.npm).trim() === npm;
-                });
+  try {
+    const response = await fetch(API_URL + "?action=getMahasiswa&nocache=" + Date.now());
+    if (!response.ok) throw new Error("Gagal menghubungi server.");
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message);
 
-                if (!mahasiswa) {
-                    tampilkanError("NPM " + npm + " tidak terdaftar.");
-                    return;
-                }
+    const mhs = result.data.find(m => String(m.npm).trim() === npm);
+    if (!mhs) return tampilkanError("NPM " + npm + " tidak terdaftar.");
 
-                document.getElementById("studentName").textContent = mahasiswa.nama || "-";
-                document.getElementById("studentClass").textContent = mahasiswa.kelas || "-";
-                document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
-                document.getElementById("qrNpm").textContent = mahasiswa.npm;
+    document.getElementById("studentName").textContent = mhs.nama || "-";
+    document.getElementById("studentClass").textContent = mhs.kelas || "-";
+    document.getElementById("studentMajor").textContent = mhs.jurusan || "-";
+    document.getElementById("qrNpm").textContent = mhs.npm;
 
-                // Tampilkan area dulu, baru gambar QR
-                document.getElementById("formArea").style.display = "none";
-                document.getElementById("qrArea").classList.add("show");
+    // QR persegi: modul 12px, quiet zone 4 modul
+    const dataUrl = await QRCode.toDataURL(String(mhs.npm), {
+      scale: 12,
+      margin: 4,
+      errorCorrectionLevel: "M",
+      color: { dark: "#000000", light: "#ffffff" }
+    });
+    document.getElementById("qrImg").src = dataUrl;
 
-                await gambarQR(String(mahasiswa.npm));
+    document.getElementById("formArea").style.display = "none";
+    document.getElementById("qrArea").classList.add("show");
+  } catch (e) {
+    console.error(e);
+    tampilkanError("Gagal memuat data. Periksa koneksi internet kamu.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "🎫 Tampilkan QR Code";
+  }
+}
 
-            } catch (error) {
-                console.error(error);
-                tampilkanError("Gagal memuat data. Periksa koneksi internet kamu.");
-            } finally {
-                button.disabled = false;
-                button.textContent = "🎫 Tampilkan QR Code";
-            }
-        }
+function tampilkanError(p) {
+  const b = document.getElementById("errorMsg");
+  b.textContent = p;
+  b.classList.add("show");
+}
 
-        // Gambar QR persegi dengan modul berukuran bulat (tajam seperti PDF)
-        async function gambarQR(teks) {
-            const canvas = document.getElementById("qrcodeCanvas");
+function resetForm() {
+  document.getElementById("npm").value = "";
+  document.getElementById("qrArea").classList.remove("show");
+  document.getElementById("formArea").style.display = "block";
+  document.getElementById("errorMsg").classList.remove("show");
+  document.getElementById("npm").focus();
+}
 
-            await QRCode.toCanvas(canvas, teks, {
-                scale: 12,                 // 1 modul = 12 piksel
-                margin: 4,                 // quiet zone standar QR
-                errorCorrectionLevel: "M",
-                color: { dark: "#000000", light: "#ffffff" }
-            });
-
-            // Library menulis style inline (ukuran piksel tetap) -> timpa
-            // supaya QR mengikuti lebar kotak tapi TETAP persegi.
-            canvas.style.width = "100%";
-            canvas.style.height = "100%";
-        }
-
-        function tampilkanError(pesan) {
-            const errorBox = document.getElementById("errorMsg");
-            errorBox.textContent = pesan;
-            errorBox.classList.add("show");
-        }
-
-        function resetForm() {
-            document.getElementById("npm").value = "";
-            document.getElementById("qrArea").classList.remove("show");
-            document.getElementById("formArea").style.display = "block";
-            document.getElementById("errorMsg").classList.remove("show");
-            document.getElementById("npm").focus();
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("npm").addEventListener("keydown", function (e) {
-                if (e.key === "Enter") generateQR();
-            });
-        });
-    </script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("npm").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") generateQR();
+  });
+});
+</script>
 </body>
 </html>
