@@ -17,7 +17,7 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(180deg, #ecfdf5 0%, #f0fdfa 100%);
+            background: #f0fdfa;
             color: #0f172a;
             padding: 20px;
             display: flex;
@@ -25,30 +25,26 @@
             justify-content: center;
         }
 
-        .phone-frame {
+        .card {
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             background: white;
-            border-radius: 28px;
-            padding: 28px 24px;
-            box-shadow: 0 25px 60px rgba(13, 148, 136, 0.15);
-            border: 1px solid #e2e8f0;
-        }
-
-        .header {
+            border-radius: 20px;
+            padding: 32px 24px;
+            box-shadow: 0 8px 30px rgba(13, 148, 136, 0.12);
             text-align: center;
-            margin-bottom: 24px;
         }
 
+        /* HEADER */
         .header-icon {
-            font-size: 42px;
-            margin-bottom: 10px;
+            font-size: 38px;
+            margin-bottom: 8px;
         }
 
         .header h1 {
             font-size: 20px;
             color: #0f172a;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             font-weight: 800;
         }
 
@@ -56,10 +52,13 @@
             font-size: 12px;
             color: #64748b;
             line-height: 1.5;
+            margin-bottom: 24px;
         }
 
+        /* FORM */
         .form-group {
             margin-bottom: 16px;
+            text-align: left;
         }
 
         .form-group label {
@@ -115,12 +114,10 @@
             transform: none;
         }
 
+        /* HASIL QR */
         .qr-result {
             display: none;
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 2px dashed #e2e8f0;
-            text-align: center;
+            margin-top: 8px;
             animation: fadeIn 0.4s ease;
         }
 
@@ -133,35 +130,26 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .student-info-box {
-            background: linear-gradient(135deg, #f0fdfa, #ecfdf5);
-            border: 1px solid #99f6e4;
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 18px;
-        }
-
-        .student-info-box .name {
-            font-size: 17px;
+        /* Nama Mahasiswa */
+        .student-name {
+            font-size: 18px;
             font-weight: 800;
             color: #0f172a;
             margin-bottom: 4px;
         }
 
-        .student-info-box .detail {
+        .student-detail {
             font-size: 12px;
             color: #0f766e;
             font-weight: 600;
+            margin-bottom: 20px;
         }
 
-        /* ====== KOTAK QR - DIPERBAIKI ====== */
-        .qr-wrapper {
+        /* ====== QR CODE POLOS (seperti PDF) ====== */
+        .qr-box {
             background: #ffffff;
-            border: 4px solid #0d9488;
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 16px;
-            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.15);
+            padding: 0;
+            margin: 0 auto 12px auto;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -172,47 +160,73 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
+            background: #ffffff;
         }
 
         #qrcode img,
         #qrcode canvas {
             display: block !important;
-            width: 100% !important;
-            max-width: 320px !important;
-            height: auto !important;
-            aspect-ratio: 1 / 1;
+            width: 320px !important;
+            height: 320px !important;
+            max-width: 100% !important;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
-            background: #ffffff;
         }
 
-        .qr-npm {
-            font-size: 20px;
-            font-weight: 800;
-            color: #0f172a;
-            letter-spacing: 4px;
-            margin-top: 12px;
+        /* NPM di bawah QR */
+        .npm-text {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 8px;
             font-family: "Courier New", monospace;
         }
 
-        .hint-box {
+        /* Label seperti PDF */
+        .qr-label {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 2px dashed #e2e8f0;
+        }
+
+        .qr-label b {
+            display: block;
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .qr-label span {
+            display: block;
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Tips */
+        .tips-box {
             background: #fef3c7;
             border: 1px solid #fcd34d;
             border-radius: 12px;
             padding: 12px;
-            font-size: 12px;
+            font-size: 11px;
             color: #78350f;
-            line-height: 1.5;
+            line-height: 1.6;
             font-weight: 600;
-            margin-top: 16px;
+            margin-top: 18px;
             text-align: left;
         }
 
-        .hint-box b {
+        .tips-box b {
             color: #92400e;
+            display: block;
+            margin-bottom: 4px;
         }
 
+        /* Tombol Reset */
         .btn-reset {
             width: 100%;
             background: #f1f5f9;
@@ -223,7 +237,7 @@
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 12px;
+            margin-top: 16px;
             transition: all 0.2s;
         }
 
@@ -231,6 +245,7 @@
             background: #e2e8f0;
         }
 
+        /* Error */
         .error-msg {
             display: none;
             margin-top: 14px;
@@ -247,26 +262,19 @@
         .error-msg.show {
             display: block;
         }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 11px;
-            color: #94a3b8;
-        }
     </style>
 </head>
 
 <body>
-    <div class="phone-frame">
-
-        <div class="header">
-            <div class="header-icon">🎫</div>
-            <h1>QR Code Saya</h1>
-            <p>Tunjukkan QR Code ini ke dosen<br>untuk absensi kehadiran</p>
-        </div>
+    <div class="card">
 
         <div id="formArea">
+            <div class="header">
+                <div class="header-icon">🎫</div>
+                <h1>QR Code Saya</h1>
+                <p>Tunjukkan QR Code ini ke dosen<br>untuk absensi kehadiran</p>
+            </div>
+
             <div class="form-group">
                 <label for="npm">Masukkan NPM Kamu</label>
                 <input
@@ -286,21 +294,24 @@
         </div>
 
         <div id="qrArea" class="qr-result">
-            <div class="student-info-box">
-                <div class="name" id="studentName">-</div>
-                <div class="detail">
-                    <span id="studentClass">-</span> • <span id="studentMajor">-</span>
-                </div>
+            <div class="student-name" id="studentName">-</div>
+            <div class="student-detail">
+                <span id="studentClass">-</span> • <span id="studentMajor">-</span>
             </div>
 
-            <div class="qr-wrapper">
+            <div class="qr-box">
                 <div id="qrcode"></div>
             </div>
 
-            <div class="qr-npm" id="qrNpm">-</div>
+            <div class="npm-text" id="qrNpm">-</div>
 
-            <div class="hint-box">
-                💡 <b>Tips supaya gampang discan:</b><br>
+            <div class="qr-label">
+                <b>QR ABSENSI MAHASISWA</b>
+                <span>Tunjukkan ke dosen untuk absensi</span>
+            </div>
+
+            <div class="tips-box">
+                <b>💡 Tips supaya gampang discan:</b>
                 1. Naikkan kecerahan layar HP ke 100%<br>
                 2. Matikan mode malam / dark mode<br>
                 3. Jarak kamera 15-25 cm dari QR<br>
@@ -310,10 +321,6 @@
             <button class="btn-reset" onclick="resetForm()">
                 ← Ganti NPM
             </button>
-        </div>
-
-        <div class="footer">
-            Sistem Absensi Mahasiswa
         </div>
     </div>
 
@@ -374,11 +381,10 @@
                 document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
                 document.getElementById("qrNpm").textContent = mahasiswa.npm;
 
-                // Hapus QR lama (kalau ada)
                 const qrBox = document.getElementById("qrcode");
                 qrBox.innerHTML = "";
 
-                // Generate QR Code baru — UKURAN BESAR & TAJAM
+                // Generate QR — UKURAN BESAR, TAJAM, SEPERTI PDF
                 new QRCode(qrBox, {
                     text: String(mahasiswa.npm),
                     width: 320,
