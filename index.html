@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi Mahasiswa - Scan NPM</title>
+    <title>Absensi Mahasiswa - Scan QR</title>
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -18,7 +18,7 @@
             <div class="logo-circle">📋</div>
             <div>
                 <h1>Absensi Mahasiswa</h1>
-                <p>Scan NPM untuk mencatat kehadiran</p>
+                <p>Scan QR Code untuk mencatat kehadiran</p>
             </div>
         </div>
         <button class="btn-refresh" onclick="loadDashboard()">
@@ -48,10 +48,10 @@
     <section class="main-area">
 
         <div class="card scan-card">
-            <div class="card-tag">SCAN NPM</div>
-            <h2>Scan NPM Mahasiswa</h2>
+            <div class="card-tag">SCAN QR</div>
+            <h2>Scan QR Code Mahasiswa</h2>
             <p class="card-desc">
-                Arahkan kamera ke barcode atau QR yang berisi NPM mahasiswa.
+                Arahkan kamera ke QR Code yang ditampilkan mahasiswa.
                 Sistem akan otomatis mencatat kehadiran.
             </p>
 
@@ -65,7 +65,7 @@
             </button>
 
             <a href="barcode-saya.html" target="_blank" class="btn-barcode-link">
-                🎫 Buka Halaman Barcode Saya
+                🎫 Buka Halaman QR Code Saya
             </a>
 
             <div class="scan-note">
@@ -145,19 +145,19 @@
 
     <footer class="app-footer">
         <b>Absensi Mahasiswa</b>
-        <span>Sistem Absensi Berbasis Scan NPM</span>
+        <span>Sistem Absensi Berbasis Scan QR Code</span>
     </footer>
 </div>
 
 <div id="scannerModal" class="scanner-modal hidden">
     <div class="scanner-box">
         <div class="scanner-header">
-            <h3>Scan NPM Mahasiswa</h3>
+            <h3>Scan QR Code Mahasiswa</h3>
             <button type="button" class="scanner-close" onclick="closeScanner()">✕</button>
         </div>
         <div id="reader"></div>
         <p class="scanner-hint">
-            Arahkan kamera ke barcode atau QR yang berisi NPM.
+            Arahkan kamera ke QR Code yang ditampilkan mahasiswa.
         </p>
         <div id="scannerError" class="scanner-error hidden"></div>
     </div>
