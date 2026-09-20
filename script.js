@@ -1,5 +1,5 @@
 // =====================================================
-// ABSENSI MAHASISWA - SCAN NPM
+// ABSENSI MAHASISWA - SCAN QR
 // =====================================================
 
 let semuaMahasiswa = [];
@@ -274,7 +274,7 @@ function tampilkanPesan(text, type) {
 }
 
 // =====================================================
-// SCAN NPM PAKAI KAMERA
+// SCAN QR PAKAI KAMERA
 // =====================================================
 function openScanner() {
     const modal = document.getElementById("scannerModal");
@@ -300,16 +300,16 @@ function openScanner() {
     html5QrScanner = new Html5Qrcode("reader", { formatsToSupport: formatsToSupport });
 
     html5QrScanner
-    .start(
-        { facingMode: "environment" },
-        {
-            fps: 20,
-            qrbox: { width: 280, height: 280 },
-            aspectRatio: 1.0
-        },
-        onScanSukses,
-        function () {}
-    )
+        .start(
+            { facingMode: "environment" },
+            {
+                fps: 20,
+                qrbox: { width: 280, height: 280 },
+                aspectRatio: 1.0
+            },
+            onScanSukses,
+            function () {}
+        )
         .then(function () {
             scannerSedangJalan = true;
         })
@@ -345,7 +345,7 @@ async function onScanSukses(decodedText) {
         document.getElementById("absenButton").classList.add("hidden");
         tampilkanPesan(
             "NPM " + npm + " tidak terdaftar. " +
-            "Pastikan barcode yang discan berisi NPM yang valid.",
+            "Pastikan QR Code yang discan berisi NPM yang valid.",
             "error"
         );
         return;
@@ -355,38 +355,4 @@ async function onScanSukses(decodedText) {
 
     document.getElementById("studentName").textContent = mahasiswa.nama || "-";
     document.getElementById("studentNpm").textContent = mahasiswa.npm || "-";
-    document.getElementById("studentClass").textContent = mahasiswa.kelas || "-";
-    document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
-    document.getElementById("studentInfo").classList.remove("hidden");
-
-    await simpanAbsensi();
-}
-
-function closeScanner() {
-    const modal = document.getElementById("scannerModal");
-    modal.classList.add("hidden");
-
-    if (html5QrScanner && scannerSedangJalan) {
-        html5QrScanner
-            .stop()
-            .then(function () {
-                html5QrScanner.clear();
-                scannerSedangJalan = false;
-            })
-            .catch(function (error) {
-                console.error(error);
-            });
-    }
-}
-
-// =====================================================
-// ESCAPE HTML
-// =====================================================
-function escapeHTML(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+    document.getElementById("studentClass").text
