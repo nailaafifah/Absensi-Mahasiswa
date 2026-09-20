@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barcode Saya - Absensi</title>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <title>QR Code Saya - Absensi</title>
+
+    <!-- Library QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         * {
@@ -114,7 +116,7 @@
             transform: none;
         }
 
-        .barcode-result {
+        .qr-result {
             display: none;
             margin-top: 24px;
             padding-top: 24px;
@@ -123,7 +125,7 @@
             animation: fadeIn 0.4s ease;
         }
 
-        .barcode-result.show {
+        .qr-result.show {
             display: block;
         }
 
@@ -153,21 +155,32 @@
             font-weight: 600;
         }
 
-        .barcode-wrapper {
+        .qr-wrapper {
             background: white;
             border: 3px solid #0d9488;
             border-radius: 16px;
-            padding: 20px 14px;
+            padding: 20px;
             margin-bottom: 16px;
             box-shadow: 0 10px 30px rgba(13, 148, 136, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        #barcode {
-            width: 100%;
-            max-width: 100%;
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .barcode-npm {
+        #qrcode img,
+        #qrcode canvas {
+            display: block !important;
+            width: 240px !important;
+            height: 240px !important;
+        }
+
+        .qr-npm {
             font-size: 18px;
             font-weight: 800;
             color: #0f172a;
@@ -240,8 +253,8 @@
 
         <div class="header">
             <div class="header-icon">🎫</div>
-            <h1>Barcode Saya</h1>
-            <p>Tunjukkan barcode ini ke dosen<br>untuk absensi kehadiran</p>
+            <h1>QR Code Saya</h1>
+            <p>Tunjukkan QR Code ini ke dosen<br>untuk absensi kehadiran</p>
         </div>
 
         <div id="formArea">
@@ -256,14 +269,14 @@
                 >
             </div>
 
-            <button class="btn-generate" onclick="generateBarcode()">
-                🎫 Tampilkan Barcode
+            <button class="btn-generate" onclick="generateQR()">
+                🎫 Tampilkan QR Code
             </button>
 
             <div id="errorMsg" class="error-msg"></div>
         </div>
 
-        <div id="barcodeArea" class="barcode-result">
+        <div id="qrArea" class="qr-result">
             <div class="student-info-box">
                 <div class="name" id="studentName">-</div>
                 <div class="detail">
@@ -271,14 +284,15 @@
                 </div>
             </div>
 
-            <div class="barcode-wrapper">
-                <svg id="barcode"></svg>
-                <div class="barcode-npm" id="barcodeNpm">-</div>
+            <div class="qr-wrapper">
+                <div id="qrcode"></div>
             </div>
 
-            <div class="hint-box">
+            <div class="qr-npm" id="qrNpm">-</div>
+
+            <div class="hint-box" style="margin-top: 16px;">
                 💡 <b>Tips:</b> Naikkan kecerahan layar HP kamu
-                biar barcode gampang discan dosen.
+                biar QR Code gampang discan dosen.
             </div>
 
             <button class="btn-reset" onclick="resetForm()">
@@ -292,15 +306,23 @@
     </div>
 
     <script>
+        // ============================================
+        // API URL — SAMAKAN DENGAN index.html
+        // ============================================
         const API_URL = "https://script.google.com/macros/s/AKfycbzwTa_k9Qb9gbSKe7SmkbXpRDbWtS0MEGAwE3GKqvXl7Mga2ANgtxBSuXQ1Wmx8HiAcRQ/exec";
 
-        async function generateBarcode() {
+        // ============================================
+        // GENERATE QR CODE
+        // ============================================
+        async function generateQR() {
             const npmInput = document.getElementById("npm");
             const npm = npmInput.value.trim();
             const errorBox = document.getElementById("errorMsg");
 
+            // Reset error
             errorBox.classList.remove("show");
 
+            // Validasi input
             if (!npm) {
                 tampilkanError("Silakan masukkan NPM terlebih dahulu.");
                 return;
@@ -316,6 +338,7 @@
             button.textContent = "Memeriksa...";
 
             try {
+                // Ambil data mahasiswa dari API
                 const response = await fetch(
                     API_URL + "?action=getMahasiswa&nocache=" + Date.now()
                 );
@@ -326,6 +349,7 @@
 
                 if (!result.success) throw new Error(result.message);
 
+                // Cari mahasiswa dengan NPM yang cocok
                 const mahasiswa = result.data.find(function (mhs) {
                     return String(mhs.npm).trim() === npm;
                 });
@@ -333,55 +357,70 @@
                 if (!mahasiswa) {
                     tampilkanError("NPM " + npm + " tidak terdaftar.");
                     button.disabled = false;
-                    button.textContent = "🎫 Tampilkan Barcode";
+                    button.textContent = "🎫 Tampilkan QR Code";
                     return;
                 }
 
+                // Tampilkan data mahasiswa
                 document.getElementById("studentName").textContent = mahasiswa.nama || "-";
                 document.getElementById("studentClass").textContent = mahasiswa.kelas || "-";
                 document.getElementById("studentMajor").textContent = mahasiswa.jurusan || "-";
-                document.getElementById("barcodeNpm").textContent = mahasiswa.npm;
+                document.getElementById("qrNpm").textContent = mahasiswa.npm;
 
-                JsBarcode("#barcode", String(mahasiswa.npm), {
-                    format: "CODE128",
-                    width: 2.5,
-                    height: 90,
-                    displayValue: false,
-                    margin: 10,
-                    background: "#ffffff",
-                    lineColor: "#0f172a"
+                // Hapus QR lama (kalau ada)
+                const qrBox = document.getElementById("qrcode");
+                qrBox.innerHTML = "";
+
+                // Generate QR Code baru
+                new QRCode(qrBox, {
+                    text: String(mahasiswa.npm),
+                    width: 240,
+                    height: 240,
+                    colorDark: "#0f172a",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
                 });
 
+                // Sembunyikan form, tampilkan QR
                 document.getElementById("formArea").style.display = "none";
-                document.getElementById("barcodeArea").classList.add("show");
+                document.getElementById("qrArea").classList.add("show");
 
             } catch (error) {
                 console.error(error);
                 tampilkanError("Gagal memuat data. Periksa koneksi internet kamu.");
             } finally {
                 button.disabled = false;
-                button.textContent = "🎫 Tampilkan Barcode";
+                button.textContent = "🎫 Tampilkan QR Code";
             }
         }
 
+        // ============================================
+        // TAMPILKAN ERROR
+        // ============================================
         function tampilkanError(pesan) {
             const errorBox = document.getElementById("errorMsg");
             errorBox.textContent = pesan;
             errorBox.classList.add("show");
         }
 
+        // ============================================
+        // RESET FORM
+        // ============================================
         function resetForm() {
             document.getElementById("npm").value = "";
-            document.getElementById("barcodeArea").classList.remove("show");
+            document.getElementById("qrArea").classList.remove("show");
             document.getElementById("formArea").style.display = "block";
             document.getElementById("errorMsg").classList.remove("show");
             document.getElementById("npm").focus();
         }
 
+        // ============================================
+        // ENTER KEY UNTUK SUBMIT
+        // ============================================
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("npm").addEventListener("keydown", function (e) {
                 if (e.key === "Enter") {
-                    generateBarcode();
+                    generateQR();
                 }
             });
         });
