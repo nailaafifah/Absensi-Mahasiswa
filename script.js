@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
     loadDashboard();
 
     document.getElementById("npm").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            cekMahasiswa();
         }
     });
 });
