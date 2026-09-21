@@ -1,172 +1,180 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi Mahasiswa - Scan QR</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Saya - Absensi</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Inter","Segoe UI",Arial,sans-serif; }
+body { min-height:100vh; background:#f0fdfa; color:#0f172a; padding:20px; display:flex; align-items:center; justify-content:center; }
+.card { position:relative; width:100%; max-width:460px; background:#fff; border-radius:20px; padding:32px 24px; box-shadow:0 8px 30px rgba(13,148,136,.12); text-align:center; }
+.ver { position:absolute; top:10px; right:14px; font-size:10px; color:#94a3b8; font-weight:700; }
 
+.header-icon { font-size:38px; margin-bottom:8px; }
+.header h1 { font-size:20px; font-weight:800; margin-bottom:4px; }
+.header p { font-size:12px; color:#64748b; line-height:1.5; margin-bottom:24px; }
+.form-group { margin-bottom:16px; text-align:left; }
+.form-group label { display:block; font-size:12px; font-weight:700; color:#334155; margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
+.form-group input { width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; outline:none; text-align:center; font-weight:700; letter-spacing:1px; }
+.form-group input:focus { border-color:#14b8a6; box-shadow:0 0 0 4px rgba(20,184,166,.1); }
+.btn-generate { width:100%; background:linear-gradient(135deg,#0d9488,#14b8a6); color:#fff; border:none; padding:15px; border-radius:12px; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 8px 20px rgba(13,148,136,.3); }
+.btn-generate:disabled { opacity:.6; cursor:not-allowed; }
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+.qr-result { display:none; }
+.qr-result.show { display:block; }
+.qr-eyebrow { font-size:12px; font-weight:800; letter-spacing:3px; color:#475569; text-transform:uppercase; }
+.qr-title { font-size:26px; font-weight:800; margin:6px 0 20px; }
+
+/* Kotak QR persegi + quiet zone putih (padding) */
+.qr-box { width:100%; max-width:280px; margin:0 auto; background:#fff; padding:20px; }
+#qrcode { width:100%; }
+#qrcode img, #qrcode canvas { width:100% !important; height:auto !important; aspect-ratio:1/1; }
+
+.npm-text { font-size:15px; color:#475569; font-weight:700; letter-spacing:3px; margin-top:10px; font-family:"Courier New",monospace; }
+.student-name { font-size:18px; font-weight:800; margin-top:18px; }
+.student-detail { font-size:12px; color:#0f766e; font-weight:600; margin-top:4px; }
+.qr-label { margin-top:20px; padding-top:16px; border-top:2px dashed #e2e8f0; }
+.qr-label b { display:block; font-size:14px; font-weight:800; letter-spacing:1px; margin-bottom:4px; }
+.qr-label span { font-size:12px; color:#64748b; }
+.tips-box { background:#fef3c7; border:1px solid #fcd34d; border-radius:12px; padding:12px; font-size:11px; color:#78350f; line-height:1.7; font-weight:600; margin-top:18px; text-align:left; }
+.tips-box b { color:#92400e; display:block; margin-bottom:4px; }
+.btn-reset { width:100%; background:#f1f5f9; color:#475569; border:none; padding:12px; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; margin-top:16px; }
+.btn-reset:hover { background:#e2e8f0; }
+.error-msg { display:none; margin-top:14px; padding:12px; border-radius:12px; background:#fee2e2; color:#991b1b; font-size:13px; font-weight:600; border:1px solid #fca5a5; }
+.error-msg.show { display:block; }
+</style>
 </head>
-
 <body>
-<div class="container">
+<div class="card">
+  <span class="ver">v4</span>
 
-    <header class="app-header">
-        <div class="header-left">
-            <div class="logo-circle">📋</div>
-            <div>
-                <h1>Absensi Mahasiswa</h1>
-                <p>Scan QR Code untuk mencatat kehadiran</p>
-            </div>
-        </div>
-        <button class="btn-refresh" onclick="loadDashboard()">
-            <span>↻</span> Refresh
-        </button>
-    </header>
-
-    <section class="stats-row">
-        <div class="stat-item stat-total">
-            <div class="stat-number" id="totalMahasiswa">0</div>
-            <div class="stat-text">Total Mahasiswa</div>
-        </div>
-        <div class="stat-item stat-hadir">
-            <div class="stat-number" id="hadir">0</div>
-            <div class="stat-text">Hadir</div>
-        </div>
-        <div class="stat-item stat-belum">
-            <div class="stat-number" id="belumHadir">0</div>
-            <div class="stat-text">Belum Hadir</div>
-        </div>
-        <div class="stat-item stat-persen">
-            <div class="stat-number"><span id="persentase">0</span>%</div>
-            <div class="stat-text">Kehadiran</div>
-        </div>
-    </section>
-
-    <section class="main-area">
-
-        <div class="card scan-card">
-            <div class="card-tag">SCAN QR</div>
-            <h2>Scan QR Code Mahasiswa</h2>
-            <p class="card-desc">
-                Arahkan kamera ke QR Code yang ditampilkan mahasiswa.
-                Sistem akan otomatis mencatat kehadiran.
-            </p>
-
-            <div class="scan-visual">
-                <div class="scan-icon">📷</div>
-                <div class="scan-text">Tekan tombol untuk membuka kamera</div>
-            </div>
-
-            <button class="btn-scan" onclick="openScanner()">
-                📷 Buka Kamera Scanner
-            </button>
-
-            <a href="barcode-saya.html" target="_blank" class="btn-barcode-link">
-                🎫 Buka Halaman QR Code Saya
-            </a>
-
-            <div class="scan-note">
-                Hasil scan langsung tersimpan ke Spreadsheet
-            </div>
-        </div>
-
-        <div class="card form-card">
-            <div class="card-tag">INPUT MANUAL</div>
-            <h2>Input NPM</h2>
-            <p class="card-desc">
-                Masukkan NPM secara manual jika kamera tidak tersedia.
-            </p>
-
-            <div class="input-wrap">
-                <label for="npm">NPM Mahasiswa</label>
-                <input type="text" id="npm" placeholder="Contoh: 2410511074" autocomplete="off">
-            </div>
-
-            <button id="checkButton" class="btn-check" onclick="cekMahasiswa()">
-                🔍 Cek Mahasiswa
-            </button>
-
-            <div id="studentInfo" class="student-card hidden">
-                <div class="student-avatar">👤</div>
-                <div class="student-detail">
-                    <h3 id="studentName">-</h3>
-                    <div class="student-row"><span>NPM</span><b id="studentNpm">-</b></div>
-                    <div class="student-row"><span>Kelas</span><b id="studentClass">-</b></div>
-                    <div class="student-row"><span>Jurusan</span><b id="studentMajor">-</b></div>
-                </div>
-            </div>
-
-            <button id="absenButton" class="btn-absen hidden" onclick="simpanAbsensi()">
-                ✓ Konfirmasi Absen
-            </button>
-
-            <div id="message" class="message hidden"></div>
-        </div>
-    </section>
-
-    <section class="card list-card">
-        <div class="card-header">
-            <div>
-                <div class="card-tag">REKAP HARI INI</div>
-                <h2>Daftar Kehadiran</h2>
-            </div>
-            <span id="dateToday" class="date-pill">-</span>
-        </div>
-
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>NPM</th>
-                        <th>Nama</th>
-                        <th>Kelas</th>
-                        <th>Waktu</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="attendanceTable"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="card absent-card">
-        <div class="card-header">
-            <div>
-                <div class="card-tag">BELUM ABSEN</div>
-                <h2>Mahasiswa Belum Hadir</h2>
-            </div>
-        </div>
-        <div id="absentList" class="absent-grid"></div>
-    </section>
-
-    <footer class="app-footer">
-        <b>Absensi Mahasiswa</b>
-        <span>Sistem Absensi Berbasis Scan QR Code</span>
-    </footer>
-</div>
-
-<div id="scannerModal" class="scanner-modal hidden">
-    <div class="scanner-box">
-        <div class="scanner-header">
-            <h3>Scan QR Code Mahasiswa</h3>
-            <button type="button" class="scanner-close" onclick="closeScanner()">✕</button>
-        </div>
-        <div id="reader"></div>
-        <p class="scanner-hint">
-            Arahkan kamera ke QR Code yang ditampilkan mahasiswa.
-        </p>
-        <div id="scannerError" class="scanner-error hidden"></div>
+  <div id="formArea">
+    <div class="header">
+      <div class="header-icon">🎫</div>
+      <h1>QR Code Saya</h1>
+      <p>Tunjukkan QR Code ini ke dosen<br>untuk absensi kehadiran</p>
     </div>
+    <div class="form-group">
+      <label for="npm">Masukkan NPM Kamu</label>
+      <input type="text" id="npm" placeholder="Contoh: 2410511074" autocomplete="off" inputmode="numeric">
+    </div>
+    <button id="btnGenerate" class="btn-generate" type="button">🎫 Tampilkan QR Code</button>
+    <div id="errorMsg" class="error-msg"></div>
+  </div>
+
+  <div id="qrArea" class="qr-result">
+    <div class="qr-eyebrow">Absensi</div>
+    <div class="qr-title">Scan QR Code</div>
+
+    <div class="qr-box"><div id="qrcode"></div></div>
+
+    <div class="npm-text" id="qrNpm">-</div>
+    <div class="student-name" id="studentName">-</div>
+    <div class="student-detail"><span id="studentClass">-</span> • <span id="studentMajor">-</span></div>
+
+    <div class="qr-label">
+      <b>QR ABSENSI MAHASISWA</b>
+      <span>Tunjukkan QR ini ke dosen untuk discan</span>
+    </div>
+
+    <div class="tips-box">
+      <b>💡 Tips supaya gampang discan:</b>
+      1. Naikkan kecerahan layar HP ke 100%<br>
+      2. Matikan mode malam / dark mode<br>
+      3. Jarak kamera 15-25 cm dari QR<br>
+      4. Bersihkan layar HP dari sidik jari
+    </div>
+
+    <button class="btn-reset" type="button" id="btnReset">← Ganti NPM</button>
+  </div>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
+var API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
+
+function el(id) { return document.getElementById(id); }
+
+function tampilkanError(p) {
+  var b = el("errorMsg");
+  b.textContent = p;
+  b.classList.add("show");
+}
+
+// Ambil data mahasiswa. Kalau gagal, kembalikan null (QR tetap dibuat).
+async function cariMahasiswa(npm) {
+  try {
+    var res = await fetch(API_URL + "?action=getMahasiswa&nocache=" + Date.now());
+    var json = await res.json();
+    if (!json.success) return { error: json.message || "Data tidak tersedia" };
+    var found = json.data.find(function (m) { return String(m.npm).trim() === npm; });
+    return found ? { data: found } : { notFound: true };
+  } catch (e) {
+    console.warn("API gagal:", e);
+    return null;
+  }
+}
+
+function buatQR(npm) {
+  var box = el("qrcode");
+  box.innerHTML = "";
+  new QRCode(box, {
+    text: npm,
+    width: 420,
+    height: 420,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+async function generateQR() {
+  var npm = el("npm").value.trim();
+  el("errorMsg").classList.remove("show");
+
+  if (!npm) return tampilkanError("Silakan masukkan NPM terlebih dahulu.");
+  if (!/^\d+$/.test(npm)) return tampilkanError("NPM hanya boleh berisi angka.");
+  if (typeof QRCode === "undefined") return tampilkanError("Library QR gagal dimuat. Refresh halaman (Ctrl+Shift+R).");
+
+  var btn = el("btnGenerate");
+  btn.disabled = true;
+  btn.textContent = "Memeriksa...";
+
+  var hasil = await cariMahasiswa(npm);
+
+  btn.disabled = false;
+  btn.textContent = "🎫 Tampilkan QR Code";
+
+  if (hasil && hasil.notFound) {
+    return tampilkanError("NPM " + npm + " tidak terdaftar.");
+  }
+
+  var mhs = (hasil && hasil.data) ? hasil.data : null;
+  el("studentName").textContent  = mhs ? (mhs.nama || "-")    : "Mahasiswa";
+  el("studentClass").textContent = mhs ? (mhs.kelas || "-")   : "-";
+  el("studentMajor").textContent = mhs ? (mhs.jurusan || "-") : "-";
+  el("qrNpm").textContent = npm;
+
+  el("formArea").style.display = "none";
+  el("qrArea").classList.add("show");
+  buatQR(npm);
+}
+
+function resetForm() {
+  el("npm").value = "";
+  el("qrArea").classList.remove("show");
+  el("formArea").style.display = "block";
+  el("errorMsg").classList.remove("show");
+  el("npm").focus();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  el("btnGenerate").addEventListener("click", generateQR);
+  el("btnReset").addEventListener("click", resetForm);
+  el("npm").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") generateQR();
+  });
+});
 </script>
-<script src="script.js"></script>
 </body>
 </html>
