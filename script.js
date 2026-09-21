@@ -12,8 +12,6 @@ let scannerSedangJalan = false;
 // =====================================================
 document.addEventListener("DOMContentLoaded", function () {
     loadDashboard();
-    mulaiJam();
-    setInterval(loadDashboard, 30000);
 
     document.getElementById("npm").addEventListener("keydown", function (event) {
         }
@@ -248,27 +246,6 @@ function renderBelumHadir(absensi) {
         `;
         container.appendChild(item);
     });
-}
-
-// =====================================================
-// JAM
-// =====================================================
-function mulaiJam() {
-    function update() {
-        const now = new Date();
-        const pad = n => String(n).padStart(2, "0");
-
-        document.getElementById("clockTime").textContent =
-            pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
-
-        document.getElementById("clockDate").textContent =
-            now.toLocaleDateString("id-ID", {
-                weekday: "long", day: "numeric", month: "long", year: "numeric"
-            });
-    }
-
-    update();
-    setInterval(update, 1000);
 }
 
 // =====================================================
