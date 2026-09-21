@@ -12,10 +12,10 @@ let scannerSedangJalan = false;
 // =====================================================
 document.addEventListener("DOMContentLoaded", function () {
     loadDashboard();
+    mulaiJam();
+    setInterval(loadDashboard, 30000);
 
     document.getElementById("npm").addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            cekMahasiswa();
         }
     });
 });
