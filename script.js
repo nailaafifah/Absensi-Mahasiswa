@@ -36,6 +36,34 @@ async function loadDashboard() {
 }
 
 // =====================================================
+// LOGOUT
+// =====================================================
+function logout() {
+    const konfirmasi = confirm("Yakin ingin logout?");
+    if (!konfirmasi) return;
+
+    // Hentikan scanner kalau sedang jalan
+    if (html5QrScanner && scannerSedangJalan) {
+        html5QrScanner.stop().catch(function () {});
+    }
+
+    // Hapus data sesi (kalau ada)
+    sessionStorage.clear();
+    localStorage.clear();
+
+    // Tampilkan layar logout
+    document.getElementById("logoutScreen").classList.remove("hidden");
+}
+
+// =====================================================
+// LOGIN KEMBALI
+// =====================================================
+function loginKembali() {
+    document.getElementById("logoutScreen").classList.add("hidden");
+    loadDashboard();
+}
+
+// =====================================================
 // LOAD MAHASISWA
 // =====================================================
 async function loadMahasiswa() {
