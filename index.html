@@ -19,7 +19,7 @@
         <p>Scan QR Code mahasiswa untuk mencatat kehadiran</p>
       </div>
     </div>
-    <button class="btn-refresh" type="button" onclick="loadDashboard()">🔄 Refresh</button>
+    <button class="btn-logout" type="button" onclick="logout()">🚪 Logout</button>
   </header>
 
   <!-- STATISTIK -->
@@ -142,7 +142,17 @@
   </div>
 </div>
 
-<!-- API_URL harus didefinisikan sebelum script.js (script.js memakainya tapi tidak mendefinisikannya) -->
+<!-- OVERLAY LOGOUT -->
+<div class="logout-screen hidden" id="logoutScreen">
+  <div class="logout-box">
+    <div class="logout-icon">🚪</div>
+    <h2>Anda Telah Logout</h2>
+    <p>Terima kasih telah menggunakan sistem absensi.</p>
+    <button class="btn-login-back" type="button" onclick="loginKembali()">🔑 Login Kembali</button>
+  </div>
+</div>
+
+<!-- API_URL harus didefinisikan sebelum script.js -->
 <script>
 var API_URL = "https://script.google.com/macros/s/AKfycbwo0WM7hYOJ9uVyCI_JV-y1Q53Wdrzi5uJlgLSR5l_nFEkV_lsTvb9QUpBNFtYK7V2H0Q/exec";
 </script>
